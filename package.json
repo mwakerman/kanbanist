@@ -1,0 +1,43 @@
+{
+  "name": "kanban.ist",
+  "version": "1.0.0",
+  "devDependencies": {
+    "react-scripts": "1.0.13"
+  },
+  "dependencies": {
+    "@blueprintjs/core": "^1.30.0",
+    "@blueprintjs/datetime": "^1.12.0",
+    "@blueprintjs/labs": "^0.5.0",
+    "babel-polyfill": "^6.22.0",
+    "immutable": "^3.8.1",
+    "isomorphic-fetch": "^2.2.1",
+    "jquery": "^3.1.1",
+    "lodash": "^4.17.4",
+    "markdown": "^0.5.0",
+    "moment": "^2.18.1",
+    "prop-types": "^15.5.10",
+    "raven-js": "^3.21.0",
+    "react": "15.4.0",
+    "react-addons-css-transition-group": "^15.4.2",
+    "react-dimensions": "^1.3.0",
+    "react-dnd": "^2.1.4",
+    "react-dnd-html5-backend": "^2.1.2",
+    "react-dom": "^15.4.2",
+    "react-ga": "^2.3.5",
+    "react-redux": "^5.0.2",
+    "react-router-dom": "^4.1.1",
+    "react-router-redux": "next",
+    "react-tooltip": "^3.4.0",
+    "redux": "^3.6.0",
+    "redux-localstorage-simple": "^1.2.0",
+    "redux-logger": "^2.8.0",
+    "redux-thunk": "^2.2.0",
+    "url-search-params": "^0.10.0"
+  },
+  "scripts": {
+    "start": "REACT_APP_VERSION=`git rev-parse --short=6 HEAD` react-scripts start",
+    "build": "react-scripts build",
+    "test": "react-scripts test --env=jsdom",
+    "eject": "react-scripts eject"
+  }
+}
