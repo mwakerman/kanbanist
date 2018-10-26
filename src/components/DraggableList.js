@@ -8,21 +8,16 @@ import { DragAndDropTypes } from './Constants';
 class DraggableListGroupItem extends React.Component {
     render() {
         const { connectDragSource, ...rest } = this.props;
-        return (
-            <List
-                {...rest}
-                ref={instance => connectDragSource(findDOMNode(instance))}
-            />
-        );
+        return <List {...rest} ref={instance => connectDragSource(findDOMNode(instance))} />;
     }
 }
 
 const listSource = {
     beginDrag(props) {
         return {
-            list: props.list
+            list: props.list,
         };
-    }
+    },
 };
 
 export default DragSource(DragAndDropTypes.LIST, listSource, (connect, monitor) => ({

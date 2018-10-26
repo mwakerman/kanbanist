@@ -1,27 +1,33 @@
 import React, { Component } from 'react';
-import {connect} from "react-redux";
+import { connect } from 'react-redux';
 import { Button, Classes, Intent, MenuItem, Position, Popover, PopoverInteractionKind } from '@blueprintjs/core';
 import { Select } from '@blueprintjs/labs';
 
 import '@blueprintjs/labs/dist/blueprint-labs.css';
 
-import {actions as listsActions, SORT_BY, SORT_BY_DIRECTION} from '../redux/modules/lists';
+import { actions as listsActions, SORT_BY, SORT_BY_DIRECTION } from '../redux/modules/lists';
 import FilterMenu from './FilterMenu';
 import DueDateFilterMenu from './DueDateFilterMenu';
-import { priorities } from "../core/Priority";
-
+import { priorities } from '../core/Priority';
 
 class Toolbar extends Component {
     render() {
-
         const {
-            lists, filteredLists, updateListsFilter,
-            projects, filteredProjects, updateProjectsFilter,
-            showIfResponsible, toggleAssigneeFilter,
+            lists,
+            filteredLists,
+            updateListsFilter,
+            projects,
+            filteredProjects,
+            updateProjectsFilter,
+            showIfResponsible,
+            toggleAssigneeFilter,
             onClearFilters,
-            defaultProjectId, setDefaultProject,
-            filteredPriorities, updatePriorityFilter,
-            sortBy, setSortBy,
+            defaultProjectId,
+            setDefaultProject,
+            filteredPriorities,
+            updatePriorityFilter,
+            sortBy,
+            setSortBy,
         } = this.props;
 
         const listsFilterMenu = (
@@ -36,7 +42,7 @@ class Toolbar extends Component {
                         updateListsFilter(filteredLists.push(list));
                     }
                 }}
-                onChangeAll={(isChecked) => {
+                onChangeAll={isChecked => {
                     if (isChecked) {
                         updateListsFilter(filteredLists.filter(el => false));
                     } else {
@@ -59,7 +65,7 @@ class Toolbar extends Component {
                         updateProjectsFilter(filteredProjects.push(project));
                     }
                 }}
-                onChangeAll={(isChecked) => {
+                onChangeAll={isChecked => {
                     if (isChecked) {
                         updateProjectsFilter(filteredProjects.filter(el => false));
                     } else {
@@ -82,7 +88,7 @@ class Toolbar extends Component {
                         updatePriorityFilter(filteredPriorities.push(priority));
                     }
                 }}
-                onChangeAll={(isChecked) => {
+                onChangeAll={isChecked => {
                     if (isChecked) {
                         updatePriorityFilter(priorities.filter(el => false));
                     } else {
@@ -100,19 +106,14 @@ class Toolbar extends Component {
                     className="Toolbar-button"
                     onClick={this.props.toggleBacklog}
                 />
-                <span className="light-divider pt-navbar-divider"/>
+                <span className="light-divider pt-navbar-divider" />
                 <Popover
                     className="Toolbar-button Toolbar-button-popover"
                     content={listsFilterMenu}
                     interactionKind={PopoverInteractionKind.CLICK}
                     popoverClassName="pt-popover-content-sizing"
-                    position={Position.BOTTOM}
-                >
-                    <Button
-                        text="Lists"
-                        iconName="property"
-                        className="Toolbar-button"
-                    />
+                    position={Position.BOTTOM}>
+                    <Button text="Lists" iconName="property" className="Toolbar-button" />
                 </Popover>
 
                 <Popover
@@ -120,13 +121,8 @@ class Toolbar extends Component {
                     content={projectsFilterMenu}
                     interactionKind={PopoverInteractionKind.CLICK}
                     popoverClassName="pt-popover-content-sizing"
-                    position={Position.BOTTOM}
-                >
-                    <Button
-                        text="Projects"
-                        iconName="projects"
-                        className="Toolbar-button"
-                    />
+                    position={Position.BOTTOM}>
+                    <Button text="Projects" iconName="projects" className="Toolbar-button" />
                 </Popover>
 
                 <Popover
@@ -134,13 +130,8 @@ class Toolbar extends Component {
                     content={<DueDateFilterMenu />}
                     interactionKind={PopoverInteractionKind.CLICK}
                     popoverClassName="pt-popover-content-sizing"
-                    position={Position.BOTTOM}
-                >
-                    <Button
-                        text="Due Date"
-                        iconName="calendar"
-                        className="Toolbar-button"
-                    />
+                    position={Position.BOTTOM}>
+                    <Button text="Due Date" iconName="calendar" className="Toolbar-button" />
                 </Popover>
 
                 <Popover
@@ -148,13 +139,8 @@ class Toolbar extends Component {
                     content={priorityFilterMenu}
                     interactionKind={PopoverInteractionKind.CLICK}
                     popoverClassName="pt-popover-content-sizing"
-                    position={Position.BOTTOM}
-                >
-                    <Button
-                        text="Priority"
-                        iconName="flag"
-                        className="Toolbar-button"
-                    />
+                    position={Position.BOTTOM}>
+                    <Button text="Priority" iconName="flag" className="Toolbar-button" />
                 </Popover>
 
                 <Button
@@ -166,9 +152,9 @@ class Toolbar extends Component {
                 />
 
                 {/*<Button*/}
-                    {/*text="Query"*/}
-                    {/*iconName="search"*/}
-                    {/*className="Toolbar-button"*/}
+                {/*text="Query"*/}
+                {/*iconName="search"*/}
+                {/*className="Toolbar-button"*/}
                 {/*/>*/}
                 <Button
                     text="Clear Filters"
@@ -178,77 +164,67 @@ class Toolbar extends Component {
                     onClick={onClearFilters}
                 />
 
-                <span className="light-divider pt-navbar-divider"/>
+                <span className="light-divider pt-navbar-divider" />
 
                 <Select
                     className="Toolbar-button"
                     items={projects}
-                    itemRenderer={({handleClick, item, isActive}) => (
+                    itemRenderer={({ handleClick, item, isActive }) => (
                         <MenuItem
-                            className={item.id === defaultProjectId ? Classes.ACTIVE : ""}
+                            className={item.id === defaultProjectId ? Classes.ACTIVE : ''}
                             key={item.id}
                             onClick={handleClick}
                             text={item.name}
                         />
                     )}
-                    onItemSelect={(item) => setDefaultProject(item.id)}
-                    filterable={false}
-                >
-                    <Button
-                        text="New items project"
-                        iconName="add-to-artifact"
-                        rightIconName="double-caret-vertical"
-                    />
+                    onItemSelect={item => setDefaultProject(item.id)}
+                    filterable={false}>
+                    <Button text="New items project" iconName="add-to-artifact" rightIconName="double-caret-vertical" />
                 </Select>
 
                 <Select
                     className="Toolbar-button"
-                    items={Object.keys(SORT_BY).map(k => ({key: k, value: SORT_BY[k]}))}
-                    itemRenderer={({handleClick, item}) => {
+                    items={Object.keys(SORT_BY).map(k => ({ key: k, value: SORT_BY[k] }))}
+                    itemRenderer={({ handleClick, item }) => {
                         const isActive = sortBy.get('field') === item.value;
                         const isAscending = sortBy.get('direction') === SORT_BY_DIRECTION.ASC;
-                        let icon = "blank";
+                        let icon = 'blank';
                         if (isActive) {
-                            icon = isAscending ? "caret-up" : "caret-down";
+                            icon = isAscending ? 'caret-up' : 'caret-down';
                         }
                         return (
                             <MenuItem
-                                className={isActive ? Classes.ACTIVE : ""}
+                                className={isActive ? Classes.ACTIVE : ''}
                                 key={item.key}
                                 onClick={handleClick}
                                 text={item.value}
                                 iconName={icon}
                             />
-                        )
+                        );
                     }}
                     onItemSelect={item => {
                         const isActive = sortBy.get('field') === item.value;
                         const isAscending = sortBy.get('direction') === SORT_BY_DIRECTION.ASC;
                         if (isActive) {
                             if (isAscending) {
-                                setSortBy(item.key, SORT_BY_DIRECTION.DESC)
+                                setSortBy(item.key, SORT_BY_DIRECTION.DESC);
                             } else {
-                                setSortBy(item.key, SORT_BY_DIRECTION.ASC)
+                                setSortBy(item.key, SORT_BY_DIRECTION.ASC);
                             }
                         } else {
                             // set new field
-                            setSortBy(item.key, SORT_BY_DIRECTION.ASC)
+                            setSortBy(item.key, SORT_BY_DIRECTION.ASC);
                         }
                     }}
-                    filterable={false}
-                >
-                    <Button
-                        text="Sort lists by"
-                        iconName="sort"
-                        rightIconName="double-caret-vertical"
-                    />
+                    filterable={false}>
+                    <Button text="Sort lists by" iconName="sort" rightIconName="double-caret-vertical" />
                 </Select>
             </div>
         );
     }
 }
 
-const mapStateToProps = (state) => ({
+const mapStateToProps = state => ({
     projects: state.lists.projects,
     filteredPriorities: state.lists.filteredPriorities,
     defaultProjectId: state.lists.defaultProjectId,

@@ -10,27 +10,26 @@ import NewListItemInput from './NewListItemInput';
 import { BoardToaster } from './Toaster';
 
 import { DragAndDropTypes } from './Constants';
-import {defaultPriority} from "../core/Priority";
-import {connect} from "react-redux";
-import {actions as listActions, SORT_BY, SORT_BY_DIRECTION} from "../redux/modules/lists";
+import { defaultPriority } from '../core/Priority';
+import { connect } from 'react-redux';
+import { actions as listActions, SORT_BY, SORT_BY_DIRECTION } from '../redux/modules/lists';
 
 const moment = require('moment');
 
 class List extends React.Component {
-
     constructor(props) {
         super(props);
         this.state = {
             allChecked: false,
-        }
+        };
     }
 
-    addItem = (newCommentText) => {
+    addItem = newCommentText => {
         if (newCommentText.length <= 0) {
             return;
         }
 
-        const {list, onAdd} = this.props;
+        const { list, onAdd } = this.props;
 
         // replace any urls with markdown links
         const content = newCommentText.replace(
@@ -41,40 +40,39 @@ class List extends React.Component {
 
         // Force item to bottom of list.
         // TODO: properly order and properly place empty box
-        const item_order = list.items.reduce((max, item) => max > item.item_order ? max : item.item_order, 0) + 1;
+        const item_order = list.items.reduce((max, item) => (max > item.item_order ? max : item.item_order), 0) + 1;
 
-
-
-        onAdd(list, {content, temp_id, item_order, priority: defaultPriority.key}, this.handleNewItemIsHidden);
+        onAdd(list, { content, temp_id, item_order, priority: defaultPriority.key }, this.handleNewItemIsHidden);
     };
 
-    handleNewItemIsHidden = (reason) => {
-        BoardToaster.show({message: reason, intent: Intent.WARNING, timeout: 5000});
-        console.log("HELO!");
+    handleNewItemIsHidden = reason => {
+        BoardToaster.show({ message: reason, intent: Intent.WARNING, timeout: 5000 });
+        console.log('HELO!');
     };
 
-    handleRename = (newName) => {
-        const {list, onListRename} = this.props;
+    handleRename = newName => {
+        const { list, onListRename } = this.props;
         if (list.title !== newName) {
             onListRename(list, newName);
         }
     };
 
     handleCompleteAll = () => {
-        const {list, onListCompleteAll} = this.props;
+        const { list, onListCompleteAll } = this.props;
 
         const millisToWait = 800; // Keep the same as ListItem#handleCheck.
-        const completeAll = () => setTimeout(
-            () => {
+        const completeAll = () =>
+            setTimeout(() => {
                 onListCompleteAll(list);
-                this.setState({allChecked: false});
-            },
-            millisToWait
-        );
+                this.setState({ allChecked: false });
+            }, millisToWait);
 
-        this.setState({
-            allChecked: true,
-        }, completeAll);
+        this.setState(
+            {
+                allChecked: true,
+            },
+            completeAll
+        );
     };
 
     handleDelete = () => {
@@ -100,10 +98,10 @@ class List extends React.Component {
         // Dynamic styles
         const dynamicStyle = {};
         if (isDragging) {
-            dynamicStyle["display"] = "none";
+            dynamicStyle['display'] = 'none';
         }
         if (listIsOver) {
-            dynamicStyle["marginRight"] = "275px"
+            dynamicStyle['marginRight'] = '275px';
         }
 
         // add spacer element to correct place in list when hovering a task over a list
@@ -127,7 +125,9 @@ class List extends React.Component {
                     break;
                 case SORT_BY.PRIORITY:
                     target = item.priority;
-                    spacerIndex = listItemToRender.findIndex(i => (isAscending) ? i.priority < target : i.priority > target);
+                    spacerIndex = listItemToRender.findIndex(
+                        i => (isAscending ? i.priority < target : i.priority > target)
+                    );
                     break;
                 case SORT_BY.PROJECT_ORDER:
                     spacerIndex = listItemToRender.findIndex(i => {
@@ -144,41 +144,45 @@ class List extends React.Component {
                     console.warn('unknown sortBy.field:', sortByField);
             }
             spacerIndex = spacerIndex > -1 ? spacerIndex : listItemToRender.size + 1;
-            listItemToRender = listItemToRender.insert(spacerIndex, {isSpacer: true, id: window.generateUUID()});
+            listItemToRender = listItemToRender.insert(spacerIndex, { isSpacer: true, id: window.generateUUID() });
         }
 
-        return connectListDropTarget(connectListItemDropTarget(
-            <div style={dynamicStyle} className={className + " List list-panel-item"}>
-                <ListTitle
-                    title={list.title}
-                    onRename={this.handleRename}
-                    onDelete={this.handleDelete}
-                    onCompleteAll={this.handleCompleteAll}
-                    disabled={!canEditTitle}
-                    showListMenu={showListMenu}
-                />
-                <div className="List-list-items">
-                    { listItemToRender.map(item => {
-                        if (item.isSpacer) {
-                            return (<div key={item.id} className="list-item-spacer"/>);
-                        } else {
-                            return (
-                                <ListItem
-                                    key={`${item.id}|${item.text.hashCode()}|${item.due_date_utc}|${this.state.allChecked}`}
-                                    item={item}
-                                    instanceList={list}
-                                    onUpdate={this.props.onListItemUpdate}
-                                    onComplete={this.props.onListItemComplete}
-                                    checked={this.state.allChecked}
-                                    collaborator={collaborators.find(c => c.id === item.responsible_uid)}
-                                />
-                            )
-                        }
-                    })}
+        return connectListDropTarget(
+            connectListItemDropTarget(
+                <div style={dynamicStyle} className={className + ' List list-panel-item'}>
+                    <ListTitle
+                        title={list.title}
+                        onRename={this.handleRename}
+                        onDelete={this.handleDelete}
+                        onCompleteAll={this.handleCompleteAll}
+                        disabled={!canEditTitle}
+                        showListMenu={showListMenu}
+                    />
+                    <div className="List-list-items">
+                        {listItemToRender.map(item => {
+                            if (item.isSpacer) {
+                                return <div key={item.id} className="list-item-spacer" />;
+                            } else {
+                                return (
+                                    <ListItem
+                                        key={`${item.id}|${item.text.hashCode()}|${item.due_date_utc}|${
+                                            this.state.allChecked
+                                        }`}
+                                        item={item}
+                                        instanceList={list}
+                                        onUpdate={this.props.onListItemUpdate}
+                                        onComplete={this.props.onListItemComplete}
+                                        checked={this.state.allChecked}
+                                        collaborator={collaborators.find(c => c.id === item.responsible_uid)}
+                                    />
+                                );
+                            }
+                        })}
+                    </div>
+                    <NewListItemInput onAdd={this.addItem} />
                 </div>
-                <NewListItemInput onAdd={this.addItem} />
-            </div>
-        ));
+            )
+        );
     }
 }
 
@@ -194,7 +198,7 @@ List.defaultProps = {
     canEditTitle: true,
     showListMenu: true,
     spacerAtBottom: true,
-    className: "",
+    className: '',
 };
 
 // Drag-and-Drop functions.
@@ -202,17 +206,17 @@ const listItemTarget = {
     drop(props, monitor) {
         const { item, instanceList } = monitor.getItem();
         props.onListItemDrop(props.list, item, instanceList);
-    }
+    },
 };
 
 const listTarget = {
     drop(props, monitor) {
         props.onListDrop(monitor.getItem().list, props.list);
-    }
+    },
 };
 
 // Connect to redux state/actions
-const mapStateToProps = (state) => ({
+const mapStateToProps = state => ({
     sortBy: state.lists.sortBy,
     collaborators: state.lists.collaborators,
 });
@@ -225,7 +229,7 @@ const {
     moveToList,
     reorderList,
     updateListItem,
-    completeListItem
+    completeListItem,
 } = listActions;
 
 const mapDispatchToProps = {
@@ -249,6 +253,5 @@ export default flow(
         connectListDropTarget: connect.dropTarget(),
         listIsOver: monitor.isOver(),
     })),
-    connect(mapStateToProps, mapDispatchToProps),
+    connect(mapStateToProps, mapDispatchToProps)
 )(List);
-

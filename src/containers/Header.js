@@ -3,19 +3,13 @@ import { connect } from 'react-redux';
 import { Link, withRouter } from 'react-router-dom';
 import { AnchorButton, Intent, Spinner } from '@blueprintjs/core';
 
-import {actions as userActions} from '../redux/modules/user';
-import {actions as listsActions} from '../redux/modules/lists';
-import {actions as uiActions} from '../redux/modules/ui';
+import { actions as userActions } from '../redux/modules/user';
+import { actions as listsActions } from '../redux/modules/lists';
+import { actions as uiActions } from '../redux/modules/ui';
 
 class Header extends React.Component {
     render() {
-        const {
-            user,
-            fetching,
-            logout,
-            fetchLists,
-            toggleToolbar,
-        } = this.props;
+        const { user, fetching, logout, fetchLists, toggleToolbar } = this.props;
 
         const { loggedIn, token } = user;
 
@@ -40,15 +34,12 @@ class Header extends React.Component {
             />
         );
 
-        const spinner = (
-            <Spinner
-                className="light-text pt-small header-right"
-                intent={Intent.WARNING}
-            />
-        );
+        const spinner = <Spinner className="light-text pt-small header-right" intent={Intent.WARNING} />;
 
         const loginButton = (
-            <Link to="/board" className="light-text pt-button pt-intent-primary">Login</Link>
+            <Link to="/board" className="light-text pt-button pt-intent-primary">
+                Login
+            </Link>
         );
 
         const toggleToolbarButton = (
@@ -61,37 +52,39 @@ class Header extends React.Component {
             />
         );
 
-        const emptyDiv = (<div className="header-right" style={{marginLeft: "0px"}}/>);
-        const atBoard = this.props.history.location.pathname === "/board";
+        const emptyDiv = <div className="header-right" style={{ marginLeft: '0px' }} />;
+        const atBoard = this.props.history.location.pathname === '/board';
         const showBoardButtons = atBoard && loggedIn;
-        const boardButton = (<button className="pt-button pt-minimal pt-icon-control">Board</button>);
+        const boardButton = <button className="pt-button pt-minimal pt-icon-control">Board</button>;
 
         return (
             <nav className="Header pt-navbar pt-fixed-top">
                 <div className="pt-navbar-group pt-align-left">
-                    <div className="pt-navbar-heading font-roboto"><Link to="/">Kanbanist</Link></div>
-                    <span className="pt-navbar-divider"/>
+                    <div className="pt-navbar-heading font-roboto">
+                        <Link to="/">Kanbanist</Link>
+                    </div>
+                    <span className="pt-navbar-divider" />
                     {/* Board button does nothing if at /board (prevents potential query string being cleared) */}
-                    { atBoard ? boardButton : <Link to={"/board"}>{boardButton}</Link> }
+                    {atBoard ? boardButton : <Link to={'/board'}>{boardButton}</Link>}
                 </div>
                 <div className="pt-navbar-group pt-align-right hide-if-small-500">
-                    { showBoardButtons ? (fetching ? spinner : syncButton) : emptyDiv }
-                    { showBoardButtons ? toggleToolbarButton : emptyDiv }
-                    { loggedIn ? logoutButton : loginButton }
+                    {showBoardButtons ? (fetching ? spinner : syncButton) : emptyDiv}
+                    {showBoardButtons ? toggleToolbarButton : emptyDiv}
+                    {loggedIn ? logoutButton : loginButton}
                 </div>
             </nav>
-        )
+        );
     }
 }
 
-const mapStateToProps = (state) => {
+const mapStateToProps = state => {
     return {
         user: state.user,
         fetching: state.lists.fetching,
     };
 };
 
-const mapDispatchToProps = (dispatch) => {
+const mapDispatchToProps = dispatch => {
     return {
         logout: () => {
             dispatch(listsActions.clearAll());
@@ -99,14 +92,14 @@ const mapDispatchToProps = (dispatch) => {
             dispatch(userActions.logout());
         },
 
-        fetchLists: (token) => {
+        fetchLists: token => {
             dispatch(listsActions.fetchLists(token));
         },
 
         toggleToolbar: () => {
             dispatch(uiActions.toggleToolbar());
-        }
-    }
+        },
+    };
 };
 
 export default withRouter(connect(mapStateToProps, mapDispatchToProps)(Header));

@@ -38,6 +38,7 @@
     "start": "REACT_APP_VERSION=`git rev-parse --short=6 HEAD` react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test --env=jsdom",
+    "format": "prettier --config .prettierrc --write src/**/*.js",
     "eject": "react-scripts eject"
   }
 }
