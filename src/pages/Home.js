@@ -45,7 +45,8 @@ export default () => (
                     Open Source: checkout the{' '}
                     <a href="https://github.com/mwakerman/kanbanist" target="_blank" rel="noopener noreferrer">
                         project on github
-                    </a>.
+                    </a>
+                    .
                 </li>
             </ul>
             <p style={{ width: '100%', margin: '20px auto', textAlign: 'center' }}>

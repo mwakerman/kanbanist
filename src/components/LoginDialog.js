@@ -66,7 +66,8 @@ class LoginDialog extends React.Component {
                             rel="noopener noreferrer"
                             className="link">
                             Integrations menu
-                        </a>.<br />
+                        </a>
+                        .<br />
                         Note that this API token is only stored locally on your computer and is never sent to Kanbanist.
                     </p>
                     <InputGroup
@@ -115,4 +116,7 @@ const mapDispatchToProps = dispatch => {
     };
 };
 
-export default connect(mapStateToProps, mapDispatchToProps)(LoginDialog);
+export default connect(
+    mapStateToProps,
+    mapDispatchToProps
+)(LoginDialog);

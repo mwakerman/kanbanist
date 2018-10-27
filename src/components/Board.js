@@ -126,7 +126,8 @@ class Board extends Component {
                                             If Kanbanist still cannot fetch your tasks,{' '}
                                             <a href="mailto:m.wakerman+kanbanistbug@gmail.com?subject=I%20found%20a%20bug%20with%20Kanbanist">
                                                 file a bug
-                                            </a>.
+                                            </a>
+                                            .
                                         </li>
                                     </ul>
                                     <p />
@@ -239,4 +240,7 @@ const mapStateToProps = state => {
     };
 };
 
-export default flow(Dimensions({ className: 'Board-Wrapper' }), connect(mapStateToProps))(Board);
+export default flow(
+    Dimensions({ className: 'Board-Wrapper' }),
+    connect(mapStateToProps)
+)(Board);

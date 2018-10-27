@@ -239,4 +239,7 @@ const mapDispatchToProps = {
     setSortBy: listsActions.setSortBy,
 };
 
-export default connect(mapStateToProps, mapDispatchToProps)(Toolbar);
+export default connect(
+    mapStateToProps,
+    mapDispatchToProps
+)(Toolbar);

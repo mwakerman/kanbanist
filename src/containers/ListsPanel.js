@@ -73,4 +73,10 @@ const mapDispatchToProps = {
 };
 
 // Connect to redux store and add DragDropContext.
-export default flow(DragDropContext(HTML5Backend), connect(mapStateToProps, mapDispatchToProps))(ListsPanel);
+export default flow(
+    DragDropContext(HTML5Backend),
+    connect(
+        mapStateToProps,
+        mapDispatchToProps
+    )
+)(ListsPanel);

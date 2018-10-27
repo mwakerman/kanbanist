@@ -116,4 +116,7 @@ const mapDispatchToProps = {
     setNamedFilter: listActions.setNamedFilter,
 };
 
-export default connect(mapStateToProps, mapDispatchToProps)(DueDateFilterMenu);
+export default connect(
+    mapStateToProps,
+    mapDispatchToProps
+)(DueDateFilterMenu);

@@ -15,7 +15,8 @@ export default () => (
                 <em>
                     "We might look at doing something about that later, but currently we don't have the resources
                     unfortunately, sorry about that."
-                </em>.
+                </em>
+                .
             </p>
             <h4>ISSUE 02: Quick add tasks.</h4>
             <p>

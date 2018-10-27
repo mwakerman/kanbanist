@@ -79,4 +79,7 @@ const mapDispatchToProps = {
     addList: listActions.addList,
 };
 
-export default connect(mapStateToProps, mapDispatchToProps)(NewListInput);
+export default connect(
+    mapStateToProps,
+    mapDispatchToProps
+)(NewListInput);

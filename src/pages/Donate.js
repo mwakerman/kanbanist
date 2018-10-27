@@ -7,15 +7,19 @@ export default () => (
             <hr />
             <p>
                 I used Todoist and wanted something like Trello's Kanban UI to manage and track my tasks and had given
-                up on Todoist releasing <a href="https://blog.todoist.com/2016/02/04/boards-todoist-kanban/">Boards</a>&nbsp;
-                for a platform other than Windows 10. And so <strike>Todollo</strike> <strike>Trelloist</strike>{' '}
-                Kanbanist was born. I hope it's something that you find useful too and feel free to send through any
-                &nbsp;<a href="mailto:m.wakerman+trelloistbug@gmail.com?subject=I%20found%20a%20bug%20with%20Trelloist">
+                up on Todoist releasing <a href="https://blog.todoist.com/2016/02/04/boards-todoist-kanban/">Boards</a>
+                &nbsp; for a platform other than Windows 10. And so <strike>
+                    Todollo
+                </strike> <strike>Trelloist</strike> Kanbanist was born. I hope it's something that you find useful too
+                and feel free to send through any &nbsp;
+                <a href="mailto:m.wakerman+trelloistbug@gmail.com?subject=I%20found%20a%20bug%20with%20Trelloist">
                     bug reports
                 </a>{' '}
-                or &nbsp;<a href="mailto:m.wakerman+trelloistfeature@gmail.com?subject=A%20feature%20request%20for%20Trelloist">
+                or &nbsp;
+                <a href="mailto:m.wakerman+trelloistfeature@gmail.com?subject=A%20feature%20request%20for%20Trelloist">
                     feature requests
-                </a>.
+                </a>
+                .
             </p>
             <hr />
             <h6>PayPal</h6>

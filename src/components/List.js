@@ -253,5 +253,8 @@ export default flow(
         connectListDropTarget: connect.dropTarget(),
         listIsOver: monitor.isOver(),
     })),
-    connect(mapStateToProps, mapDispatchToProps)
+    connect(
+        mapStateToProps,
+        mapDispatchToProps
+    )
 )(List);
