@@ -206,8 +206,8 @@ class ListItem extends React.Component {
                                 <span dangerouslySetInnerHTML={{ __html: formattedText }} />
                             </div>
                         )}
-                        <a href={`https://todoist.com/showTask?id=${item.id}`} target="_blank" rel="noopener" aria-label="Open in Todoist">
-                          <Icon iconName="link"/>
+                        <a className="task-link" href={`https://todoist.com/showTask?id=${item.id}`} target="_blank" rel="noopener" aria-label="Open in Todoist">
+                          <Icon iconName="link" iconSize={5}/>
                         </a>
                     </div>
                     <div className="ListItem-inner-bottom">

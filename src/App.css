@@ -245,6 +245,14 @@ p {
   flex-direction: row;
 }
 
+.ListItem-inner .task-link {
+    visibility: hidden;
+}
+
+.ListItem:hover .task-link {
+    visibility: visible;
+}
+
 .ListItem .priority-4 .pt-control-indicator {
   border-color: RGB(170, 5, 15);
   background: RGBA(170, 5, 15, 0.5) none;
