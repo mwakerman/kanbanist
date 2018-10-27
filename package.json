@@ -2,6 +2,7 @@
   "name": "kanban.ist",
   "version": "1.0.0",
   "devDependencies": {
+    "cross-env": "5.2.0",
     "react-scripts": "1.0.13"
   },
   "dependencies": {
@@ -35,7 +36,7 @@
     "url-search-params": "^0.10.0"
   },
   "scripts": {
-    "start": "REACT_APP_VERSION=`git rev-parse --short=6 HEAD` react-scripts start",
+    "start": "cross-env REACT_APP_VERSION=$npm_package_version react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test --env=jsdom",
     "eject": "react-scripts eject"
