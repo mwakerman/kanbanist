@@ -51,7 +51,7 @@ class ListItem extends React.Component {
             .replace(/!!(.*?)!!/g, '**$1**')
             // eslint-disable-next-line
             .replace(
-                /[^[(]?(https?:\/\/(?:www\.|(?!www))[^\s\.]+\.[^\s]{2,}|www\.[^\s]+\.[^\s]{2,}) \((.*?)\)/g,
+                /[^[(]?(https?:\/\/(?:www\.|(?!www))[^\s.]+\.[^\s]{2,}|www\.[^\s]+\.[^\s]{2,}) \((.*?)\)/g,
                 '[$2]($1)'
             );
 

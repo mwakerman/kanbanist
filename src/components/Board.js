@@ -168,24 +168,18 @@ class Board extends Component {
             // named filters
             if (namedFilter) {
                 switch (namedFilter) {
-                    // eslint-disable-next-line
                     case NAMED_FILTERS.NEXT_7_DAYS:
-                        {
-                            if (!item.due_date_utc) {
-                                return false;
-                            }
+                        if (!item.due_date_utc) {
+                            return false;
+                        }
 
-                            if (moment(item.due_date_utc).isAfter(moment().add(7, 'days'))) {
-                                return false;
-                            }
+                        if (moment(item.due_date_utc).isAfter(moment().add(7, 'days'))) {
+                            return false;
                         }
                         break;
-                    // eslint-disable-next-line
                     case NAMED_FILTERS.NO_DUE_DATE:
-                        {
-                            if (item.due_date_utc) {
-                                return false;
-                            }
+                        if (item.due_date_utc) {
+                            return false;
                         }
                         break;
                     default:
