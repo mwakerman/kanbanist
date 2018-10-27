@@ -12,6 +12,10 @@ The missing kanban board for [Todoist](https://todoist.com/).
 - Full support for [Todoist quick-add syntax](https://support.todoist.com/hc/en-us/articles/115001745265-Task-Quick-Add).
 - Full support for `markdown` and emojis 🎉.
 
+## Known Issues
+
+- As described in [Issue 9](https://github.com/mwakerman/kanbanist/issues/9), the drag-and-drop functionality is visually buggy (offset) and not working at all in Safari.
+
 ## Development
 
 Kanbanist is a static (serverless) website built using [`create-react-app`](https://github.com/facebook/create-react-app) and dependencies are managed using [`yarn`](https://yarnpkg.com/en/)
