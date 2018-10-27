@@ -7,7 +7,6 @@ import moment from 'moment';
 
 import { actions as listActions, NAMED_FILTERS } from '../redux/modules/lists';
 
-
 // DateRangePicker shortcuts
 const now = moment();
 const tomorrow = moment().add(1, 'days');
@@ -16,15 +15,14 @@ const beginningOfMonth = moment().startOf('month');
 const endOfMonth = moment().endOf('month');
 
 const dueDateShortcuts = [
-    {label: "Today", dateRange: [now.toDate(), now.toDate()]},
-    {label: "Tomorrow", dateRange: [tomorrow.toDate(), tomorrow.toDate()]},
-    {label: "This week", dateRange: [now.toDate(), sevenDaysFromNow.toDate()]},
-    {label: "This month", dateRange: [beginningOfMonth.toDate(), endOfMonth.toDate()]},
+    { label: 'Today', dateRange: [now.toDate(), now.toDate()] },
+    { label: 'Tomorrow', dateRange: [tomorrow.toDate(), tomorrow.toDate()] },
+    { label: 'This week', dateRange: [now.toDate(), sevenDaysFromNow.toDate()] },
+    { label: 'This month', dateRange: [beginningOfMonth.toDate(), endOfMonth.toDate()] },
 ];
 
 class DueDateFilterMenu extends React.Component {
-
-    handleDateChange = (dateArray) => {
+    handleDateChange = dateArray => {
         const { setNamedFilter, updateDueDateFilter } = this.props;
         const [startDate, endDate] = dateArray;
         const startMoment = startDate !== null ? moment(startDate).startOf('day') : null;
@@ -39,7 +37,7 @@ class DueDateFilterMenu extends React.Component {
         setNamedFilter(null);
     };
 
-    handleNamedFilter = (filter) => {
+    handleNamedFilter = filter => {
         const { updateDueDateFilter, setNamedFilter } = this.props;
         console.debug('TODO: setNamedFilter', filter);
 
@@ -51,44 +49,44 @@ class DueDateFilterMenu extends React.Component {
             // un-set named filter
             setNamedFilter(null);
         }
-    }
+    };
 
     render() {
         const { filterDueDate, namedFilter } = this.props;
-        const startDateMoment = filterDueDate.get("startDate", null);
-        const endDateMoment = filterDueDate.get("endDate", null);
+        const startDateMoment = filterDueDate.get('startDate', null);
+        const endDateMoment = filterDueDate.get('endDate', null);
         const startDate = startDateMoment !== null ? startDateMoment.toDate() : null;
         const endDate = endDateMoment !== null ? endDateMoment.toDate() : null;
         return (
             <div>
                 <h6>Due Date Filter</h6>
-                <hr/>
+                <hr />
                 <Button
                     className="Toolbar-button"
                     text="Next 7 Days"
                     title="Dynamic filter"
-                    onClick={() =>  {
+                    onClick={() => {
                         if (namedFilter === NAMED_FILTERS.NEXT_7_DAYS) {
-                            this.handleNamedFilter(null)
+                            this.handleNamedFilter(null);
                         } else {
-                            this.handleNamedFilter(NAMED_FILTERS.NEXT_7_DAYS)
+                            this.handleNamedFilter(NAMED_FILTERS.NEXT_7_DAYS);
                         }
                     }}
                     active={namedFilter === NAMED_FILTERS.NEXT_7_DAYS}
                 />
-                <Button 
+                <Button
                     className="Toolbar-button"
                     text="No Due Date"
-                    onClick={() =>  {
+                    onClick={() => {
                         if (namedFilter === NAMED_FILTERS.NO_DUE_DATE) {
-                            this.handleNamedFilter(null)
+                            this.handleNamedFilter(null);
                         } else {
-                            this.handleNamedFilter(NAMED_FILTERS.NO_DUE_DATE)
+                            this.handleNamedFilter(NAMED_FILTERS.NO_DUE_DATE);
                         }
                     }}
-                    active={namedFilter === NAMED_FILTERS.NO_DUE_DATE}                    
+                    active={namedFilter === NAMED_FILTERS.NO_DUE_DATE}
                 />
-                <hr/>
+                <hr />
                 <div>
                     <DateRangePicker
                         value={[startDate, endDate]}
@@ -108,7 +106,7 @@ class DueDateFilterMenu extends React.Component {
     }
 }
 
-const mapStateToProps = (state) => {
+const mapStateToProps = state => {
     const { filterDueDate, namedFilter } = state.lists;
     return { filterDueDate, namedFilter };
 };

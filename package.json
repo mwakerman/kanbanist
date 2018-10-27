@@ -39,6 +39,7 @@
     "start": "cross-env REACT_APP_VERSION=$npm_package_version react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test --env=jsdom",
+    "format": "prettier --config .prettierrc --write src/**/*.js",
     "eject": "react-scripts eject"
   }
 }

@@ -1,7 +1,7 @@
 export const types = {
-    'TOGGLE_TOOLBAR': 'TOGGLE_TOOLBAR',
-    'TOGGLE_BACKLOG': 'TOGGLE_BACKLOG',
-    'RESTORE_INITIAL_STATE': 'RESTORE_INITIAL_STATE',
+    TOGGLE_TOOLBAR: 'TOGGLE_TOOLBAR',
+    TOGGLE_BACKLOG: 'TOGGLE_BACKLOG',
+    RESTORE_INITIAL_STATE: 'RESTORE_INITIAL_STATE',
 };
 
 const initialState = {
@@ -15,12 +15,12 @@ export const reducer = (state = initialState, action) => {
             // If we toggle the toolbar, we also close the backlog.
             const next = !state.showToolbar;
             if (next) {
-                return {...state, showToolbar: next}
+                return { ...state, showToolbar: next };
             } else {
-                return {...state, showBacklog: false, showToolbar: next}
+                return { ...state, showBacklog: false, showToolbar: next };
             }
         case types.TOGGLE_BACKLOG:
-            return {...state, showBacklog: !state.showBacklog};
+            return { ...state, showBacklog: !state.showBacklog };
         case types.RESTORE_INITIAL_STATE:
             return initialState;
         default:
@@ -29,7 +29,7 @@ export const reducer = (state = initialState, action) => {
 };
 
 export const actions = {
-    toggleToolbar: () => ({type: types.TOGGLE_TOOLBAR}),
-    toggleBacklog: () => ({type: types.TOGGLE_BACKLOG}),
-    restoreInitialState: () => ({type: types.RESTORE_INITIAL_STATE}),
+    toggleToolbar: () => ({ type: types.TOGGLE_TOOLBAR }),
+    toggleBacklog: () => ({ type: types.TOGGLE_BACKLOG }),
+    restoreInitialState: () => ({ type: types.RESTORE_INITIAL_STATE }),
 };

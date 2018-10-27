@@ -1,15 +1,14 @@
 import React from 'react';
 import { Button, Classes, InputGroup, Intent } from '@blueprintjs/core';
-import {actions as listActions} from "../redux/modules/lists";
-import {connect} from "react-redux";
+import { actions as listActions } from '../redux/modules/lists';
+import { connect } from 'react-redux';
 
 class NewListInput extends React.Component {
-
     constructor(props) {
         super(props);
         this.state = {
-            text: "",
-        }
+            text: '',
+        };
     }
 
     handleAdd = () => {
@@ -23,29 +22,31 @@ class NewListInput extends React.Component {
         const temp_id = window.generateUUID();
 
         // note: calling addList within the setState callback prevents the scrollIntoView from functioning as desired.
-        addList({name, temp_id});
+        addList({ name, temp_id });
 
         // add item and clear state
-        this.setState({
-            text: "",
-        }, () => {
-            // scroll right to keep the new list input in view.
-            document.getElementById('new-list-input').scrollIntoView();
-            // stay at the top
-            window.scroll(0,0);
-        });
+        this.setState(
+            {
+                text: '',
+            },
+            () => {
+                // scroll right to keep the new list input in view.
+                document.getElementById('new-list-input').scrollIntoView();
+                // stay at the top
+                window.scroll(0, 0);
+            }
+        );
     };
 
     // allow creation of list using 'enter' key.
     // note: input should stay focused.
-    handleIfEnter = (e) => {
+    handleIfEnter = e => {
         if (e.key === 'Enter') {
             this.handleAdd();
         }
     };
 
     render() {
-
         const addButton = (
             <Button
                 className={Classes.MINIMAL}
@@ -63,7 +64,7 @@ class NewListInput extends React.Component {
                     type="text"
                     placeholder="Add a list..."
                     onKeyPress={this.handleIfEnter}
-                    onChange={(event) => this.setState({text: event.target.value})}
+                    onChange={event => this.setState({ text: event.target.value })}
                     rightElement={addButton}
                     className="NewListInput-input"
                 />
@@ -72,7 +73,7 @@ class NewListInput extends React.Component {
     }
 }
 
-const mapStateToProps = (state) => ({});
+const mapStateToProps = state => ({});
 
 const mapDispatchToProps = {
     addList: listActions.addList,

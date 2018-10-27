@@ -1,13 +1,12 @@
 import React from 'react';
-import {EditableText} from '@blueprintjs/core';
+import { EditableText } from '@blueprintjs/core';
 
 export default class NewListItemInput extends React.Component {
-
     constructor(props) {
         super(props);
         this.state = {
-            newCommentText: "",
-        }
+            newCommentText: '',
+        };
     }
 
     /**
@@ -17,27 +16,24 @@ export default class NewListItemInput extends React.Component {
      */
     handleBlur = () => {
         this.setState({
-            newCommentText: "",
+            newCommentText: '',
         });
-    }
+    };
 
     /**
      * Invoked when user changes input in any way.
      */
-    handleChange = (text) => {
+    handleChange = text => {
         // Make EditableText handle 'enter' press as submission (normally it would just
         // add a newline to the comment).
-        const isNewLine = text.indexOf("\n") >= 0;
-        if (isNewLine){
+        const isNewLine = text.indexOf('\n') >= 0;
+        if (isNewLine) {
             const itemText = this.state.newCommentText;
-            this.setState(
-                { newCommentText: ""},
-                () => this.props.onAdd(itemText)
-            )
+            this.setState({ newCommentText: '' }, () => this.props.onAdd(itemText));
         } else {
             this.setState({
                 newCommentText: text,
-            })
+            });
         }
     };
 

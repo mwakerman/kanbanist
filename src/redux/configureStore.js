@@ -1,11 +1,6 @@
-import {
-    applyMiddleware, 
-    bindActionCreators,
-    combineReducers,
-    createStore 
-} from 'redux';
+import { applyMiddleware, bindActionCreators, combineReducers, createStore } from 'redux';
 import thunk from 'redux-thunk';
-import createLogger from 'redux-logger'
+import createLogger from 'redux-logger';
 import Raven from 'raven-js';
 
 import { load, save, LOCAL_STORAGE_NAMESPACE } from './localStoragePersistence';
@@ -25,23 +20,22 @@ const emptyMiddleware = store => next => action => next(action);
 
 const sentryMiddleware = store => next => action => {
     switch (action.type) {
-            case user.types.LOGIN: {
-                const user = action.payload;
-                Raven.setUserContext({
-                    userId: user.id,
-                    userTz: user.tz_info.timezone,
-                    premium: user.is_premium
-                });
-                break;
-            }
-            default:
-                // no-op
+        case user.types.LOGIN: {
+            const user = action.payload;
+            Raven.setUserContext({
+                userId: user.id,
+                userTz: user.tz_info.timezone,
+                premium: user.is_premium,
+            });
+            break;
+        }
+        default:
+        // no-op
     }
     next(action);
 };
 
 export const configureStore = () => {
-
     const reducer = combineReducers({
         lists: lists.reducer,
         user: user.reducer,
@@ -49,18 +43,18 @@ export const configureStore = () => {
         router: routerReducer,
     });
 
-    const logger = process.env.NODE_ENV === 'development' ? createLogger({collapsed: true}) : emptyMiddleware;
+    const logger = process.env.NODE_ENV === 'development' ? createLogger({ collapsed: true }) : emptyMiddleware;
 
     const history = createHistory();
 
     const middleware = applyMiddleware(
-        logger, 
+        logger,
         sentryMiddleware,
         todoistPersistenceMiddleware,
-        save({namespace: LOCAL_STORAGE_NAMESPACE}), 
+        save({ namespace: LOCAL_STORAGE_NAMESPACE }),
         thunk,
         routerMiddleware(history),
-        trelloistFilterUrlMiddleware,
+        trelloistFilterUrlMiddleware
     );
 
     // If we change the localStorage schema, loading will fail. So if we can't load
@@ -69,7 +63,7 @@ export const configureStore = () => {
     try {
         initialState = load();
     } catch (ex) {
-        console.error("Could not load initialState from localStorage.", ex);
+        console.error('Could not load initialState from localStorage.', ex);
         localStorage.clear();
     }
 
@@ -77,10 +71,10 @@ export const configureStore = () => {
 
     const actions = {
         lists: bindActionCreators(lists.actions, store.dispatch),
-        user:  bindActionCreators(user.actions,  store.dispatch),
-        ui:    bindActionCreators(ui.actions,    store.dispatch),
+        user: bindActionCreators(user.actions, store.dispatch),
+        ui: bindActionCreators(ui.actions, store.dispatch),
     };
-    return {store, actions, history};
+    return { store, actions, history };
 };
 
 export default configureStore;

@@ -1,20 +1,20 @@
 import { push } from 'react-router-redux';
 import { types } from '../modules/lists';
 import { List } from 'immutable';
-import {priorities} from "../../core/Priority";
+import { priorities } from '../../core/Priority';
 
 export function generateQueryString({
-        lists,
-        projects,
-        filteredLists,
-        filteredProjects,
-        filteredPriorities,
-        filterDueDate,
-        showIfResponsible,
-        startDate,
-        endDate,
-        namedFilter}) {
-
+    lists,
+    projects,
+    filteredLists,
+    filteredProjects,
+    filteredPriorities,
+    filterDueDate,
+    showIfResponsible,
+    startDate,
+    endDate,
+    namedFilter,
+}) {
     const queryParams = {};
 
     if (!filteredLists.isEmpty()) {
@@ -34,7 +34,9 @@ export function generateQueryString({
     }
 
     if (!filteredPriorities.isEmpty()) {
-        const visiblePriorities = priorities.filter(p => !filteredPriorities.map(el => el.id).contains(p.id)).map(p => p.id);
+        const visiblePriorities = priorities
+            .filter(p => !filteredPriorities.map(el => el.id).contains(p.id))
+            .map(p => p.id);
         queryParams['priorities'] = JSON.stringify(visiblePriorities.toArray());
     }
 
@@ -63,19 +65,19 @@ export function generateQueryString({
     }
 
     const keys = List(Object.keys(queryParams));
-    return keys.isEmpty() ? "" : "?" + keys.map(key => key + "=" + queryParams[key]).join("&");
+    return keys.isEmpty() ? '' : '?' + keys.map(key => key + '=' + queryParams[key]).join('&');
 }
 
-const  trelloistFilterUrl = store => next => action => {
-    const { router, lists} = store.getState();
+const trelloistFilterUrl = store => next => action => {
+    const { router, lists } = store.getState();
     const { dispatch } = store;
     let willShowIfResponsible = lists.showIfResponsible;
-    switch(action.type) {
+    switch (action.type) {
         // Ensures the URL query string is in sync with state every time a filter is updated
         case types.TOGGLE_ASSIGNEE_FILTER:
             willShowIfResponsible = !willShowIfResponsible;
-            // eslint-disable-next-line
-            // fallthrough
+        // eslint-disable-next-line
+        // fallthrough
         case types.UPDATE_LISTS_FILTER:
         case types.UPDATE_PROJECTS_FILTER:
         case types.UPDATE_DUE_DATE_FILTER:
@@ -85,7 +87,7 @@ const  trelloistFilterUrl = store => next => action => {
             const queryString = generateQueryString({
                 ...lists,
                 ...action.payload,
-                showIfResponsible: willShowIfResponsible
+                showIfResponsible: willShowIfResponsible,
             });
             if (queryString) {
                 dispatch(push(router.location.pathname + queryString));
