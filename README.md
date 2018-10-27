@@ -22,7 +22,7 @@ To get started `git checkout` the repository and then run `yarn` (to install dep
 
 Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change.
 
-Please use the following `prettier` configuration on all javascript files:
+Please use the following `prettier` configuration on all javascript files (or run `yarn format`):
 
 
 		prettier --print-width 120 ---tab-width 4 -single-quote --jsx-bracket-same-line --arrow-parens avoid --trailing-comma es5 --write src/**/*.js
