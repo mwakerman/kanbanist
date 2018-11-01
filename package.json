@@ -40,6 +40,7 @@
     "build": "react-scripts build",
     "test": "react-scripts test --env=jsdom",
     "format": "prettier --config .prettierrc --write src/**/*.js",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "deploy": "yarn && REACT_APP_VERSION=\"$(git rev-parse --short HEAD)\" yarn build && cp netlify/* build/"
   }
 }

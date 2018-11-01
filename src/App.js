@@ -50,6 +50,7 @@ class App extends React.Component {
                     <Header history={history} />
                     <div className="main-content">
                         <Switch>
+                            {/* note: add new paths to netlify/_redirects */}
                             <Route exact={true} path="/" component={Home} />
                             <Route path="/board" component={props => <Board actions={actions} {...props} />} />
                             <Route path="/issues" component={Issues} />
