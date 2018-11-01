@@ -120,20 +120,20 @@ class Toolbar extends Component {
 
                 <Popover
                     className="Toolbar-button Toolbar-button-popover"
-                    content={<DueDateFilterMenu />}
-                    interactionKind={PopoverInteractionKind.CLICK}
-                    popoverClassName="pt-popover-content-sizing"
-                    position={Position.BOTTOM}>
-                    <Button text="Due Date" iconName="calendar" className="Toolbar-button" />
-                </Popover>
-
-                <Popover
-                    className="Toolbar-button Toolbar-button-popover"
                     content={priorityFilterMenu}
                     interactionKind={PopoverInteractionKind.CLICK}
                     popoverClassName="pt-popover-content-sizing"
                     position={Position.BOTTOM}>
                     <Button text="Priority" iconName="flag" className="Toolbar-button" />
+                </Popover>
+
+                <Popover
+                    className="Toolbar-button Toolbar-button-popover"
+                    content={<DueDateFilterMenu />}
+                    interactionKind={PopoverInteractionKind.CLICK}
+                    popoverClassName="pt-popover-content-sizing"
+                    position={Position.BOTTOM}>
+                    <Button text="Due Date" iconName="calendar" className="Toolbar-button" />
                 </Popover>
 
                 <Button
