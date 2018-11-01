@@ -105,7 +105,7 @@ class Toolbar extends Component {
                     content={listsFilterMenu}
                     interactionKind={PopoverInteractionKind.CLICK}
                     popoverClassName="pt-popover-content-sizing"
-                    position={Position.BOTTOM}>
+                    position={Position.BOTTOM_LEFT}>
                     <Button text="Lists" iconName="property" className="Toolbar-button" />
                 </Popover>
 
