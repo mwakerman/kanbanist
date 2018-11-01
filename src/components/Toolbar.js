@@ -100,13 +100,6 @@ class Toolbar extends Component {
 
         return (
             <div className="Toolbar">
-                <Button
-                    text="Backlog"
-                    iconName="comparison"
-                    className="Toolbar-button"
-                    onClick={this.props.toggleBacklog}
-                />
-                <span className="light-divider pt-navbar-divider" />
                 <Popover
                     className="Toolbar-button Toolbar-button-popover"
                     content={listsFilterMenu}
