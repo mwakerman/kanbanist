@@ -112,7 +112,6 @@ const mapDispatchToProps = dispatch => {
         },
         toggleBacklog: () => {
             dispatch(uiActions.toggleBacklog());
-            return;
         },
     };
 };
