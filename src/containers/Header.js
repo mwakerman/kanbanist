@@ -25,6 +25,16 @@ class Header extends React.Component {
             />
         );
 
+        const backlogButton = (
+            <AnchorButton
+                text="Backlog"
+                iconName="comparison"
+                className="light-text header-right"
+                onClick={this.props.toggleBacklog}
+                intent={Intent.PRIMARY}
+            />
+        );
+
         const syncButton = (
             <AnchorButton
                 className="light-text header-right"
@@ -69,6 +79,7 @@ class Header extends React.Component {
                 </div>
                 <div className="pt-navbar-group pt-align-right hide-if-small-500">
                     {showBoardButtons ? (fetching ? spinner : syncButton) : emptyDiv}
+                    {showBoardButtons ? backlogButton : emptyDiv}
                     {showBoardButtons ? toggleToolbarButton : emptyDiv}
                     {loggedIn ? logoutButton : loginButton}
                 </div>
@@ -98,6 +109,9 @@ const mapDispatchToProps = dispatch => {
 
         toggleToolbar: () => {
             dispatch(uiActions.toggleToolbar());
+        },
+        toggleBacklog: () => {
+            dispatch(uiActions.toggleBacklog());
         },
     };
 };

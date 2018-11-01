@@ -100,19 +100,12 @@ class Toolbar extends Component {
 
         return (
             <div className="Toolbar">
-                <Button
-                    text="Backlog"
-                    iconName="comparison"
-                    className="Toolbar-button"
-                    onClick={this.props.toggleBacklog}
-                />
-                <span className="light-divider pt-navbar-divider" />
                 <Popover
                     className="Toolbar-button Toolbar-button-popover"
                     content={listsFilterMenu}
                     interactionKind={PopoverInteractionKind.CLICK}
                     popoverClassName="pt-popover-content-sizing"
-                    position={Position.BOTTOM}>
+                    position={Position.BOTTOM_LEFT}>
                     <Button text="Lists" iconName="property" className="Toolbar-button" />
                 </Popover>
 
@@ -127,20 +120,20 @@ class Toolbar extends Component {
 
                 <Popover
                     className="Toolbar-button Toolbar-button-popover"
-                    content={<DueDateFilterMenu />}
-                    interactionKind={PopoverInteractionKind.CLICK}
-                    popoverClassName="pt-popover-content-sizing"
-                    position={Position.BOTTOM}>
-                    <Button text="Due Date" iconName="calendar" className="Toolbar-button" />
-                </Popover>
-
-                <Popover
-                    className="Toolbar-button Toolbar-button-popover"
                     content={priorityFilterMenu}
                     interactionKind={PopoverInteractionKind.CLICK}
                     popoverClassName="pt-popover-content-sizing"
                     position={Position.BOTTOM}>
                     <Button text="Priority" iconName="flag" className="Toolbar-button" />
+                </Popover>
+
+                <Popover
+                    className="Toolbar-button Toolbar-button-popover"
+                    content={<DueDateFilterMenu />}
+                    interactionKind={PopoverInteractionKind.CLICK}
+                    popoverClassName="pt-popover-content-sizing"
+                    position={Position.BOTTOM}>
+                    <Button text="Due Date" iconName="calendar" className="Toolbar-button" />
                 </Popover>
 
                 <Button
