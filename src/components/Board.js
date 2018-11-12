@@ -174,7 +174,7 @@ class Board extends Component {
                             return false;
                         }
 
-                        if (moment(item.due_date_utc).isAfter(moment().add(7, 'days'))) {
+                        if (moment(item.due_date_utc).isAfter(moment().add(7, 'days'), 'day')) {
                             return false;
                         }
                         break;
@@ -183,7 +183,7 @@ class Board extends Component {
                             return false;
                         }
 
-                        if (moment(item.due_date_utc).isAfter(moment())) {
+                        if (moment(item.due_date_utc).isAfter(moment(), 'day')) {
                             return false;
                         }
                         break;
