@@ -178,6 +178,15 @@ class Board extends Component {
                             return false;
                         }
                         break;
+                    case NAMED_FILTERS.TODAY:
+                        if (!item.due_date_utc) {
+                            return false;
+                        }
+
+                        if (moment(item.due_date_utc).isAfter(moment())) {
+                            return false;
+                        }
+                        break;
                     case NAMED_FILTERS.NO_DUE_DATE:
                         if (item.due_date_utc) {
                             return false;
