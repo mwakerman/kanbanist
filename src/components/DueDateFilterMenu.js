@@ -76,6 +76,19 @@ class DueDateFilterMenu extends React.Component {
                 />
                 <Button
                     className="Toolbar-button"
+                    text="Today"
+                    title="Dynamic filter"
+                    onClick={() => {
+                        if (namedFilter === NAMED_FILTERS.TODAY) {
+                            this.handleNamedFilter(null);
+                        } else {
+                            this.handleNamedFilter(NAMED_FILTERS.TODAY);
+                        }
+                    }}
+                    active={namedFilter === NAMED_FILTERS.TODAY}
+                />
+                <Button
+                    className="Toolbar-button"
                     text="No Due Date"
                     onClick={() => {
                         if (namedFilter === NAMED_FILTERS.NO_DUE_DATE) {

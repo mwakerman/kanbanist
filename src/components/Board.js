@@ -174,7 +174,16 @@ class Board extends Component {
                             return false;
                         }
 
-                        if (moment(item.due_date_utc).isAfter(moment().add(7, 'days'))) {
+                        if (moment(item.due_date_utc).isAfter(moment().add(7, 'days'), 'day')) {
+                            return false;
+                        }
+                        break;
+                    case NAMED_FILTERS.TODAY:
+                        if (!item.due_date_utc) {
+                            return false;
+                        }
+
+                        if (moment(item.due_date_utc).isAfter(moment(), 'day')) {
                             return false;
                         }
                         break;

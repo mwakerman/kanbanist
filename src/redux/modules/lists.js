@@ -37,6 +37,7 @@ export const HIDDEN_REASON = {
 
 export const NAMED_FILTERS = {
     NEXT_7_DAYS: 'NEXT_7_DAYS',
+    TODAY: 'TODAY',
     NO_DUE_DATE: 'NO_DUE_DATE',
 };
 
