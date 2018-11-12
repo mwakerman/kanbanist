@@ -8,16 +8,13 @@ import moment from 'moment';
 import { actions as listActions, NAMED_FILTERS } from '../redux/modules/lists';
 
 // DateRangePicker shortcuts
-const now = moment();
-const tomorrow = moment().add(1, 'days');
-const sevenDaysFromNow = moment().add(6, 'days');
+const beginningOfWeek = moment().startOf('week');
+const endOfWeek = moment().endOf('week');
 const beginningOfMonth = moment().startOf('month');
 const endOfMonth = moment().endOf('month');
 
 const dueDateShortcuts = [
-    { label: 'Today', dateRange: [now.toDate(), now.toDate()] },
-    { label: 'Tomorrow', dateRange: [tomorrow.toDate(), tomorrow.toDate()] },
-    { label: 'This week', dateRange: [now.toDate(), sevenDaysFromNow.toDate()] },
+    { label: 'This week', dateRange: [beginningOfWeek.toDate(), endOfWeek.toDate()] },
     { label: 'This month', dateRange: [beginningOfMonth.toDate(), endOfMonth.toDate()] },
 ];
 
@@ -61,23 +58,11 @@ class DueDateFilterMenu extends React.Component {
             <div>
                 <h6>Due Date Filter</h6>
                 <hr />
-                <Button
-                    className="Toolbar-button"
-                    text="Next 7 Days"
-                    title="Dynamic filter"
-                    onClick={() => {
-                        if (namedFilter === NAMED_FILTERS.NEXT_7_DAYS) {
-                            this.handleNamedFilter(null);
-                        } else {
-                            this.handleNamedFilter(NAMED_FILTERS.NEXT_7_DAYS);
-                        }
-                    }}
-                    active={namedFilter === NAMED_FILTERS.NEXT_7_DAYS}
-                />
+                <p><strong>Dynamic</strong></p>
                 <Button
                     className="Toolbar-button"
                     text="Today"
-                    title="Dynamic filter"
+                    title="Dynamic filter - Today"
                     onClick={() => {
                         if (namedFilter === NAMED_FILTERS.TODAY) {
                             this.handleNamedFilter(null);
@@ -89,6 +74,20 @@ class DueDateFilterMenu extends React.Component {
                 />
                 <Button
                     className="Toolbar-button"
+                    text="Next 7 Days"
+                    title="Dynamic filter - Next 7 days"
+                    onClick={() => {
+                        if (namedFilter === NAMED_FILTERS.NEXT_7_DAYS) {
+                            this.handleNamedFilter(null);
+                        } else {
+                            this.handleNamedFilter(NAMED_FILTERS.NEXT_7_DAYS);
+                        }
+                    }}
+                    active={namedFilter === NAMED_FILTERS.NEXT_7_DAYS}
+                />
+                <Button
+                    className="Toolbar-button"
+                    title="Dynamic filter - No Due Date"
                     text="No Due Date"
                     onClick={() => {
                         if (namedFilter === NAMED_FILTERS.NO_DUE_DATE) {
@@ -100,6 +99,8 @@ class DueDateFilterMenu extends React.Component {
                     active={namedFilter === NAMED_FILTERS.NO_DUE_DATE}
                 />
                 <hr />
+                <p><strong>Date Range</strong></p>
+                <br/>
                 <div>
                     <DateRangePicker
                         value={[startDate, endDate]}
