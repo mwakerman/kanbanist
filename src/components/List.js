@@ -125,8 +125,8 @@ class List extends React.Component {
                     break;
                 case SORT_BY.PRIORITY:
                     target = item.priority;
-                    spacerIndex = listItemToRender.findIndex(
-                        i => (isAscending ? i.priority < target : i.priority > target)
+                    spacerIndex = listItemToRender.findIndex(i =>
+                        isAscending ? i.priority < target : i.priority > target
                     );
                     break;
                 case SORT_BY.PROJECT_ORDER:
