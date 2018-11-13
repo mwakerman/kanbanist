@@ -17,7 +17,7 @@ export default class FilterMenu extends React.Component {
 
     render() {
         const { checkboxItems, selectedItems, title, labelProperty } = this.props;
-
+        const displayNum = this.props.title === 'Lists Filter' ? true : false; 
         const allSelected = checkboxItems.filter(el => !selectedItems.contains(el)).isEmpty();
 
         return (
@@ -33,13 +33,17 @@ export default class FilterMenu extends React.Component {
                         onChange={this.handleAllCheckbox}
                     />
                     {checkboxItems.map(item => {
+                        let labelString = item[labelProperty];
+                        if (displayNum)
+                            labelString += "\t(" + item["items"].size + ")";
                         return (
                             <Checkbox
                                 key={item.id}
                                 checked={selectedItems.contains(item)}
-                                label={item[labelProperty]}
+                                label={labelString}
                                 onChange={event => this.handleCheckbox(item, event)}
-                            />
+                            >
+                            </Checkbox>
                         );
                     })}
                 </div>
