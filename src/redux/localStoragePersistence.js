@@ -121,7 +121,7 @@ export function load() {
                 : Immutable.List.of();
 
             selectedLabelIds = labels
-                ? loadedState.lists.lists.filter(list => labels.contains(list.title)).map(list => list.id)
+                ? loadedState.lists.lists.filter(list => labels.indexOf(list.title) >= 0).map(list => list.id)
                 : Immutable.List.of();
 
             filteredPriorities = priorities
