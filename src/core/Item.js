@@ -10,10 +10,11 @@ const ItemRecord = Record({
     responsible_uid: null,
     date_added: '',
     date_string: '',
+    labels: [],
 });
 
 export default class Item extends ItemRecord {
-    updateWith({ id, text, item_order, project, due_date_utc, priority, responsible_uid, date_added, date_string }) {
+    updateWith({ id, text, item_order, project, due_date_utc, priority, responsible_uid, date_added, date_string, labels }) {
         return new Item({
             id: id || this.id,
             text: text || this.text,
@@ -24,6 +25,7 @@ export default class Item extends ItemRecord {
             responsible_uid: responsible_uid || this.responsible_uid,
             date_added: date_added || this.date_added,
             date_string: date_string || this.date_string,
+            labels: labels || this.labels,
         });
     }
 }
