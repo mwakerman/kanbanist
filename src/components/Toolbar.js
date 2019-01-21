@@ -149,7 +149,7 @@ class Toolbar extends Component {
                     interactionKind={PopoverInteractionKind.CLICK}
                     popoverClassName="pt-popover-content-sizing"
                     position={Position.BOTTOM}>
-                    <Button text="Labels" iconName="projects" className="Toolbar-button" />
+                    <Button text="Labels" iconName="tag" className="Toolbar-button" />
                 </Popover>
 
                 <Popover
