@@ -69,7 +69,7 @@ export function load() {
         // Filters
         let filteredListIds = Immutable.List(jsState.lists.filteredLists.map(el => el.id));
         let filteredProjectIds = Immutable.List(jsState.lists.filteredProjects.map(project => project.id));
-        let filteredLabelIds = Immutable.List(jsState.lists.filteredLabels.map(list => list.id));
+        let selectedLabelIds = Immutable.List(jsState.lists.selectedLabels.map(list => list.id));
         let filteredPriorities = Priorities.filter(p => jsState.lists.filteredPriorities.indexOf(p.id) >= 0);
 
         loadedState.lists.filterDueDate = Immutable.Map({
@@ -120,8 +120,8 @@ export function load() {
                 ? loadedState.lists.projects.filter(el => projects.indexOf(el.name) < 0).map(el => el.id)
                 : Immutable.List.of();
 
-            filteredLabelIds = labels
-                ? loadedState.lists.lists.filter(list => labels.indexOf(list.title) < 0).map(list => list.id)
+            selectedLabelIds = labels
+                ? loadedState.lists.lists.filter(list => labels.contains(list.title)).map(list => list.id)
                 : Immutable.List.of();
 
             filteredPriorities = priorities
@@ -145,8 +145,8 @@ export function load() {
         loadedState.lists.filteredProjects = loadedState.lists.projects.filter(project =>
             filteredProjectIds.contains(project.id)
         );
-        loadedState.lists.filteredLabels = loadedState.lists.filteredLists.filter(list => 
-            filteredLabelIds.contains(list.id)
+        loadedState.lists.selectedLabels = loadedState.lists.filteredLists.filter(list => 
+            selectedLabelIds.contains(list.id)
         );
         loadedState.lists.defaultProjectId = jsState.lists.defaultProjectId;
         loadedState.lists.filteredPriorities = filteredPriorities;

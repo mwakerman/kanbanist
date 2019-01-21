@@ -48,7 +48,7 @@ const initialState = {
     projects: ImmutableList.of(),
     defaultProjectId: undefined,
     filteredProjects: ImmutableList.of(),
-    filteredLabels: ImmutableList.of(),
+    selectedLabels: ImmutableList.of(),
     filterDueDate: Map({ startDate: null, endDate: null }),
     filteredPriorities: ImmutableList.of(),
     showIfResponsible: false,
@@ -120,7 +120,7 @@ export const actions = {
     clearAll: () => ({ type: types.CLEAR_ALL }),
     updateListsFilter: filteredLists => ({ type: types.UPDATE_LISTS_FILTER, payload: { filteredLists } }),
     updateProjectsFilter: filteredProjects => ({ type: types.UPDATE_PROJECTS_FILTER, payload: { filteredProjects } }),
-    updateLabelsFilter: filteredLabels => ({ type: types.UPDATE_LABELS_FILTER, payload: { filteredLabels } }),
+    updateLabelsFilter: selectedLabels => ({ type: types.UPDATE_LABELS_FILTER, payload: { selectedLabels } }),
     updateDueDateFilter: (startDate, endDate) => ({
         type: types.UPDATE_DUE_DATE_FILTER,
         payload: { startDate, endDate },
@@ -375,8 +375,8 @@ function updateProjectsFilter(state, action) {
 }
 
 function updateLabelsFilter(state, action) {
-    const { filteredLabels } = action.payload;
-    return { ...state, filteredLabels };
+    const { selectedLabels } = action.payload;
+    return { ...state, selectedLabels };
 }
 
 function updatePriorityFilter(state, action) {
@@ -470,8 +470,8 @@ function fetchSuccess(state, action) {
     const filteredProjectsIds = state.filteredProjects.map(el => el.id);
     const filteredProjects = loadedProjects.filter(el => filteredProjectsIds.contains(el.id));
 
-    const filteredLabelIds = state.filteredLabels.map(list => list.id);
-    const filteredLabels = loadedLists.filter(list => filteredLabelIds.contains(list.id));
+    const selectedLabelIds = state.selectedLabels.map(list => list.id);
+    const selectedLabels = loadedLists.filter(list => selectedLabelIds.contains(list.id));
     
     return {
         ...state,
@@ -479,7 +479,7 @@ function fetchSuccess(state, action) {
         filteredProjects,
         lists: loadedLists,
         filteredLists,
-        filteredLabels,
+        selectedLabels,
         backlog: backlogList,
         fetching: false,
         fetchFail: null,
@@ -614,7 +614,7 @@ export const reducer = (state = initialState, action) => {
                 ...state,
                 filteredProjects: initialState.filteredProjects,
                 filteredLists: initialState.filteredLists,
-                filteredLabels: initialState.filteredLabels,
+                selectedLabels: initialState.selectedLabels,
                 filterDueDate: initialState.filterDueDate,
                 filteredPriorities: initialState.filteredPriorities,
                 showIfResponsible: false,

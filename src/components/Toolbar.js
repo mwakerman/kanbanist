@@ -19,7 +19,7 @@ class Toolbar extends Component {
             projects,
             filteredProjects,
             updateProjectsFilter,
-            filteredLabels,
+            selectedLabels,
             updateLabelsFilter,
             showIfResponsible,
             toggleAssigneeFilter,
@@ -81,20 +81,20 @@ class Toolbar extends Component {
             <FilterMenu
                 title="Labels Filter"
                 checkboxItems={filteredLists}
-                selectedItems={filteredLists.filter(el => !filteredLabels.contains(el))}
+                selectedItems={filteredLists.filter(el => selectedLabels.contains(el))}
                 labelProperty="title"
                 onChange={(label, isChecked) => {
                     if (isChecked) {
-                        updateLabelsFilter(filteredLabels.filter(el => el.id !== label.id));
+                        updateLabelsFilter(selectedLabels.push(label));
                     } else {
-                        updateLabelsFilter(filteredLabels.push(label));
+                        updateLabelsFilter(selectedLabels.filter(el => el.id !== label.id));
                     }
                 }}
                 onChangeAll={isChecked => {
                     if (isChecked) {
-                        updateLabelsFilter(filteredLabels.filter(el => false));
-                    } else {
                         updateLabelsFilter(filteredLists);
+                    } else {
+                        updateLabelsFilter(selectedLabels.filter(el => false));
                     }
                 }}
             />

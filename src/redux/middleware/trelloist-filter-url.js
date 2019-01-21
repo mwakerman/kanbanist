@@ -8,7 +8,7 @@ export function generateQueryString({
     projects,
     filteredLists,
     filteredProjects,
-    filteredLabels,
+    selectedLabels,
     filteredPriorities,
     filterDueDate,
     showIfResponsible,
@@ -34,9 +34,9 @@ export function generateQueryString({
         queryParams['projects'] = JSON.stringify(visibleProjects.toArray());
     }
 
-    if (!filteredLabels.isEmpty()) {
+    if (!selectedLabels.isEmpty()) {
         const visibleLabels = filteredLists
-            .filter(list => !filteredLabels.map(el => el.id).contains(list.id))
+            .filter(list => selectedLabels.map(el => el.id).contains(list.id))
             .map(list => list.title);
 
         queryParams['labels'] = JSON.stringify(visibleLabels.toArray());
