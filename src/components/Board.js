@@ -42,6 +42,7 @@ class Board extends Component {
             filteredLists,
             lists,
             filteredProjects,
+            filteredLabels,
             filteredPriorities,
             filterDueDate,
             namedFilter,
@@ -69,6 +70,8 @@ class Board extends Component {
                 updateListsFilter={actions.lists.updateListsFilter}
                 filteredProjects={filteredProjects}
                 updateProjectsFilter={actions.lists.updateProjectsFilter}
+                filteredLabels={filteredLabels}
+                updateLabelsFilter={actions.lists.updateLabelsFilter}
                 onClearFilters={actions.lists.clearFilters}
             />
         );
@@ -142,6 +145,9 @@ class Board extends Component {
 
         // Filtering Lists & Items
         const filteredProjectIds = filteredProjects.map(project => project.id);
+        const filteredLabelIds = Set(filteredLabels.map(label => label.id));
+        const selectedLabelIds = Set(filteredLists.map(list => list.id)).subtract(filteredLabelIds);
+
         const filterStartMoment = filterDueDate.get('startDate', null);
         const filterEndMoment = filterDueDate.get('endDate', null);
         const dueDateFilterIsSet = filterStartMoment !== null && filterEndMoment !== null;
@@ -149,6 +155,10 @@ class Board extends Component {
         const filterFn = item => {
             // project
             if (filteredProjectIds.contains(item.project.id)) {
+                return false;
+            }
+
+            if (!selectedLabelIds.isSubset(Set(item.labels))) {
                 return false;
             }
 
@@ -245,6 +255,7 @@ const mapStateToProps = state => {
         projects: state.lists.projects,
         defaultProjectId: state.lists.defaultProjectId,
         filteredProjects: state.lists.filteredProjects,
+        filteredLabels: state.lists.filteredLabels,
         filteredPriorities: state.lists.filteredPriorities,
         filterDueDate: state.lists.filterDueDate,
         namedFilter: state.lists.namedFilter,

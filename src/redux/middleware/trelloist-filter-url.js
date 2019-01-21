@@ -8,6 +8,7 @@ export function generateQueryString({
     projects,
     filteredLists,
     filteredProjects,
+    filteredLabels,
     filteredPriorities,
     filterDueDate,
     showIfResponsible,
@@ -33,6 +34,13 @@ export function generateQueryString({
         queryParams['projects'] = JSON.stringify(visibleProjects.toArray());
     }
 
+    if (!filteredLabels.isEmpty()) {
+        const visibleLabels = filteredLists
+            .filter(list => !filteredLabels.map(el => el.id).contains(list.id))
+            .map(list => list.title);
+
+        queryParams['labels'] = JSON.stringify(visibleLabels.toArray());
+    }
     if (!filteredPriorities.isEmpty()) {
         const visiblePriorities = priorities
             .filter(p => !filteredPriorities.map(el => el.id).contains(p.id))
@@ -80,6 +88,7 @@ const trelloistFilterUrl = store => next => action => {
         // fallthrough
         case types.UPDATE_LISTS_FILTER:
         case types.UPDATE_PROJECTS_FILTER:
+        case types.UPDATE_LABELS_FILTER:
         case types.UPDATE_DUE_DATE_FILTER:
         case types.SET_NAMED_FILTER:
         case types.UPDATE_PRIORITY_FILTER:

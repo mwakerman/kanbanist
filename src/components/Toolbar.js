@@ -19,6 +19,8 @@ class Toolbar extends Component {
             projects,
             filteredProjects,
             updateProjectsFilter,
+            filteredLabels,
+            updateLabelsFilter,
             showIfResponsible,
             toggleAssigneeFilter,
             onClearFilters,
@@ -75,6 +77,29 @@ class Toolbar extends Component {
             />
         );
 
+        const labelsFilterMenu = (
+            <FilterMenu
+                title="Labels Filter"
+                checkboxItems={filteredLists}
+                selectedItems={filteredLists.filter(el => !filteredLabels.contains(el))}
+                labelProperty="title"
+                onChange={(label, isChecked) => {
+                    if (isChecked) {
+                        updateLabelsFilter(filteredLabels.filter(el => el.id !== label.id));
+                    } else {
+                        updateLabelsFilter(filteredLabels.push(label));
+                    }
+                }}
+                onChangeAll={isChecked => {
+                    if (isChecked) {
+                        updateLabelsFilter(filteredLabels.filter(el => false));
+                    } else {
+                        updateLabelsFilter(filteredLists);
+                    }
+                }}
+            />
+        );
+
         const priorityFilterMenu = (
             <FilterMenu
                 title="Priority Filter"
@@ -116,6 +141,15 @@ class Toolbar extends Component {
                     popoverClassName="pt-popover-content-sizing"
                     position={Position.BOTTOM}>
                     <Button text="Projects" iconName="projects" className="Toolbar-button" />
+                </Popover>
+
+                <Popover
+                    className="Toolbar-button Toolbar-button-popover"
+                    content={labelsFilterMenu}
+                    interactionKind={PopoverInteractionKind.CLICK}
+                    popoverClassName="pt-popover-content-sizing"
+                    position={Position.BOTTOM}>
+                    <Button text="Labels" iconName="projects" className="Toolbar-button" />
                 </Popover>
 
                 <Popover
