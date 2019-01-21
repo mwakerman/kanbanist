@@ -211,18 +211,15 @@ class Board extends Component {
         };
 
         const filteredListIds = Set(filteredLists.map(l => l.id));
-        const selectedListIds = Set(lists
-            .map(list => list.id)
-            .filter(listId => !filteredListIds.contains(listId)));
+        const selectedListIds = Set(lists.map(list => list.id).filter(listId => !filteredListIds.contains(listId)));
 
         const fullyFilteredLists = lists
             .filter(list => selectedListIds.contains(list.id))
             .map(list => list.setItems(list.items.filter(filterFn)));
 
         const filteredBacklog = backlogList.setItems(
-            backlogList.items
-                .filter(filterFn)
-                .filter(item => Set(item.labels).intersect(selectedListIds).size === 0));
+            backlogList.items.filter(filterFn).filter(item => Set(item.labels).intersect(selectedListIds).size === 0)
+        );
 
         return (
             <div className="Board">
