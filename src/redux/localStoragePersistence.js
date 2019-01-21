@@ -145,7 +145,7 @@ export function load() {
         loadedState.lists.filteredProjects = loadedState.lists.projects.filter(project =>
             filteredProjectIds.contains(project.id)
         );
-        loadedState.lists.selectedLabels = loadedState.lists.filteredLists.filter(list => 
+        loadedState.lists.selectedLabels = loadedState.lists.filteredLists.filter(list =>
             selectedLabelIds.contains(list.id)
         );
         loadedState.lists.defaultProjectId = jsState.lists.defaultProjectId;

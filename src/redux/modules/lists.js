@@ -472,7 +472,7 @@ function fetchSuccess(state, action) {
 
     const selectedLabelIds = state.selectedLabels.map(list => list.id);
     const selectedLabels = loadedLists.filter(list => selectedLabelIds.contains(list.id));
-    
+
     return {
         ...state,
         projects: loadedProjects,
