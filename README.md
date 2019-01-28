@@ -1,10 +1,29 @@
 # Kanbanist 
-The missing kanban board for [Todoist](https://todoist.com/).
+
+<!-- TODO: Shields (see:shields.io) -->
+
+> The missing kanban board for [Todoist](https://todoist.com/).
 
 ![Kanbanist](src/pages/kanbanist.png?raw=true "Kanbanist")
 
-## Features
+<!--
+## Table of Contents
+- [Features](#features)
+- [Usage](#usage)
+- [Development](#development)
+    - [Building](#building)
+    - [Testing](#testing)
+    - [Releasing](#releasing)
+    - [Debugging](#debugging)
+- [Contributing](#contributing)
+- [Changelog](#changelog)
+- [Authors](#authors)
+    - [Achknowledgements](#achknowledgements)
+	- [Built With](#built-with)
+- [License](#license)
+-->
 
+## Features
 - Create a dynamic kanban board for Todoist tasks.
 - Completely serverless: the application syncs to/from Todoist directly so changes instanstly show up in all your Todoist apps.
 - Private and secure: no server means no place for unwanted eyes to look at your tasks.
@@ -13,24 +32,31 @@ The missing kanban board for [Todoist](https://todoist.com/).
 - Full support for `markdown` and emojis 🎉.
 
 ## Known Issues
-
 - As described in [Issue 9](https://github.com/mwakerman/kanbanist/issues/9), the drag-and-drop functionality is visually buggy (offset) and not working at all in Safari.
 
-## Development
-
-Kanbanist is a static (serverless) website built using [`create-react-app`](https://github.com/facebook/create-react-app) and dependencies are managed using [`yarn`](https://yarnpkg.com/en/)
-
+## Getting Started
 To get started `git checkout` the repository and then run `yarn` (to install dependencies) and `yarn start` to start the development server.
 
+
 ## Contributing
+Please read [CONTRIBUTING.md](CONTRIBUTING.md) for details on how to contribute to this project.
 
-Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change.
+## Changelog
+All notable changes are documented in [CHANGELOG.md](CHANGELOG.md). For past available versions, see the [tags on this repository](https://github.com/kanbanist/kanbanist/tags).
 
-Please use the following `prettier` configuration on all javascript files (or run `yarn format`):
+## Authors
+<!-- Thoses who have written code -->
+**Misha Wakerman** -- Maintainer -- [@mwakerman](https://github.com/mwakerman)
 
+See also the list of [contributors](https://github.com/kanbanist/kanbanist/contributors) who participated in this project.
 
-		prettier --print-width 120 ---tab-width 4 -single-quote --jsx-bracket-same-line --arrow-parens avoid --trailing-comma es5 --write src/**/*.js
+### Acknowledgements
+<!-- Anyone whose code was used, inspirations, etc. -->
+**Full Name** -- [Reason](https://github.com/username/repo) -- [@username](https://github.com/username)
 
+### Built With
+* [Create React App](https://github.com/facebook/create-react-app) -- React boilerplate code generator.
+* [Yarn](https://yarnpkg.com/en/) --  Dependency management.
 
 ## License
 Kanbanist is proudly open source software licensed under [MIT](LICENSE).
