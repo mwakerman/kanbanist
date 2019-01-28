@@ -35,7 +35,7 @@
 - As described in [Issue 9](https://github.com/mwakerman/kanbanist/issues/9), the drag-and-drop functionality is visually buggy (offset) and not working at all in Safari.
 
 ## Getting Started
-To get started `git checkout` the repository and then run `yarn` (to install dependencies) and `yarn start` to start the development server.
+To get started `git clone` the repository and then run `yarn` (to install dependencies) and `yarn start` to start the development server.
 
 
 ## Contributing
