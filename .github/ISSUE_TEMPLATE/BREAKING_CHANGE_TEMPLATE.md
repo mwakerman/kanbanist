@@ -5,7 +5,7 @@ labels: enhancement
 assignees: mwakerman
 ---
 
-#### Breaking Change
+### Breaking Change
 
 #### Issue Checklist
 - [ ] Checked [README](README.md) and [CONTRIBUTING](CONTRIBUTING.md)

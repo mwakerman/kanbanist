@@ -1,4 +1,4 @@
-#### Pull Request
+### Pull Request
 **IMPORTANT: For major changes, please open an issue first to discuss what you would like to change.**
 
 #### Checklist

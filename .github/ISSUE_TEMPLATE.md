@@ -1,4 +1,4 @@
-#### Issue
+### Issue
 
 #### Issue Checklist
 - [ ] Checked [README](README.md) and [CONTRIBUTING](CONTRIBUTING.md)

@@ -5,7 +5,7 @@ labels: enhancement
 assignees: mwakerman
 ---
 
-#### Feature Request
+### Feature Request
 
 #### Issue Checklist
 - [ ] Checked [README](README.md) and [CONTRIBUTING](CONTRIBUTING.md)

@@ -5,7 +5,7 @@ labels: question
 assignees: mwakerman
 ---
 
-#### Other Questions
+### Other Questions
 
 #### Issue Checklist
 - [ ] Checked [README](README.md) and [CONTRIBUTING](CONTRIBUTING.md)

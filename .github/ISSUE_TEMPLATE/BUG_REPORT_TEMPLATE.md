@@ -5,7 +5,7 @@ labels: bug
 assignees: mwakerman
 ---
 
-#### Bug Report
+### Bug Report
 
 #### Issue Checklist
 - [ ] Checked [README](README.md) and [CONTRIBUTING](CONTRIBUTING.md)
