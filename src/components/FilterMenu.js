@@ -37,9 +37,12 @@ export default class FilterMenu extends React.Component {
                             <Checkbox
                                 key={item.id}
                                 checked={selectedItems.contains(item)}
-                                label={item[labelProperty]}
-                                onChange={event => this.handleCheckbox(item, event)}
-                            />
+                                onChange={event => this.handleCheckbox(item, event)}>
+                                <span>
+                                    {'-'.repeat(item.indent - 1)}
+                                    {item[labelProperty]}
+                                </span>
+                            </Checkbox>
                         );
                     })}
                 </div>
