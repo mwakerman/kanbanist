@@ -6,4 +6,5 @@ export default Record({
     color: 0,
     shared: false,
     item_order: 0,
+    indent: 0,
 });
