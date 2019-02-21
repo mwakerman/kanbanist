@@ -9,6 +9,7 @@ import { actions as listsActions, SORT_BY, SORT_BY_DIRECTION } from '../redux/mo
 import FilterMenu from './FilterMenu';
 import DueDateFilterMenu from './DueDateFilterMenu';
 import { priorities } from '../core/Priority';
+import { getDescendents } from '../core/Project';
 
 class Toolbar extends Component {
     render() {
@@ -59,17 +60,11 @@ class Toolbar extends Component {
                 selectedItems={projects.filter(el => !filteredProjects.contains(el))}
                 labelProperty="name"
                 onChange={(project, isChecked) => {
-                    const children = [project];
-                    for (let item of projects
-                        .filter(item => item.item_order > project.item_order)
-                        .sort((p1, p2) => Math.sign(p1.item_order - p2.item_order))) {
-                        if (item.indent <= project.indent) break;
-                        children.push(item);
-                    }
+                    const descendants = getDescendents(project, projects);
                     if (isChecked) {
-                        updateProjectsFilter(filteredProjects.filter(el => !children.map(c => c.id).includes(el.id)));
+                        updateProjectsFilter(filteredProjects.filter(el => !descendants.some(p => p.id === el.id)));
                     } else {
-                        updateProjectsFilter(filteredProjects.push(...children));
+                        updateProjectsFilter(filteredProjects.push(...descendants));
                     }
                 }}
                 onChangeAll={isChecked => {
