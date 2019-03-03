@@ -39,6 +39,7 @@ export default class FilterMenu extends React.Component {
                                 checked={selectedItems.contains(item)}
                                 label={item[labelProperty]}
                                 onChange={event => this.handleCheckbox(item, event)}
+                                style={{ marginLeft: `${item.indent * 22}px`}}
                             />
                         );
                     })}

@@ -9,6 +9,7 @@ import { actions as listsActions, SORT_BY, SORT_BY_DIRECTION } from '../redux/mo
 import FilterMenu from './FilterMenu';
 import DueDateFilterMenu from './DueDateFilterMenu';
 import { priorities } from '../core/Priority';
+import { getDescendents } from '../core/Project';
 
 class Toolbar extends Component {
     render() {
@@ -59,10 +60,11 @@ class Toolbar extends Component {
                 selectedItems={projects.filter(el => !filteredProjects.contains(el))}
                 labelProperty="name"
                 onChange={(project, isChecked) => {
+                    const descendants = getDescendents(project, projects);
                     if (isChecked) {
-                        updateProjectsFilter(filteredProjects.filter(el => el.id !== project.id));
+                        updateProjectsFilter(filteredProjects.filter(el => !descendants.some(p => p.id === el.id)));
                     } else {
-                        updateProjectsFilter(filteredProjects.push(project));
+                        updateProjectsFilter(filteredProjects.push(...descendants));
                     }
                 }}
                 onChangeAll={isChecked => {
@@ -108,7 +110,6 @@ class Toolbar extends Component {
                     position={Position.BOTTOM_LEFT}>
                     <Button text="Lists" iconName="property" className="Toolbar-button" />
                 </Popover>
-
                 <Popover
                     className="Toolbar-button Toolbar-button-popover"
                     content={projectsFilterMenu}
@@ -117,7 +118,6 @@ class Toolbar extends Component {
                     position={Position.BOTTOM}>
                     <Button text="Projects" iconName="projects" className="Toolbar-button" />
                 </Popover>
-
                 <Popover
                     className="Toolbar-button Toolbar-button-popover"
                     content={priorityFilterMenu}
@@ -126,7 +126,6 @@ class Toolbar extends Component {
                     position={Position.BOTTOM}>
                     <Button text="Priority" iconName="flag" className="Toolbar-button" />
                 </Popover>
-
                 <Popover
                     className="Toolbar-button Toolbar-button-popover"
                     content={<DueDateFilterMenu />}
@@ -135,7 +134,6 @@ class Toolbar extends Component {
                     position={Position.BOTTOM}>
                     <Button text="Due Date" iconName="calendar" className="Toolbar-button" />
                 </Popover>
-
                 <Button
                     text="Assigned to me"
                     iconName="user"
@@ -143,7 +141,6 @@ class Toolbar extends Component {
                     active={showIfResponsible}
                     onClick={toggleAssigneeFilter}
                 />
-
                 {/*<Button*/}
                 {/*text="Query"*/}
                 {/*iconName="search"*/}
@@ -156,9 +153,7 @@ class Toolbar extends Component {
                     className="Toolbar-button"
                     onClick={onClearFilters}
                 />
-
                 <span className="light-divider pt-navbar-divider" />
-
                 <Select
                     className="Toolbar-button"
                     items={projects}
@@ -174,7 +169,6 @@ class Toolbar extends Component {
                     filterable={false}>
                     <Button text="New items project" iconName="add-to-artifact" rightIconName="double-caret-vertical" />
                 </Select>
-
                 <Select
                     className="Toolbar-button"
                     items={Object.keys(SORT_BY).map(k => ({ key: k, value: SORT_BY[k] }))}
