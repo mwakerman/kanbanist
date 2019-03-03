@@ -20,7 +20,9 @@ The missing kanban board for [Todoist](https://todoist.com/).
 
 Kanbanist is a static (serverless) website built using [`create-react-app`](https://github.com/facebook/create-react-app) and dependencies are managed using [`yarn`](https://yarnpkg.com/en/)
 
-To get started `git checkout` the repository and then run `yarn` (to install dependencies) and `yarn start` to start the development server.
+To get started `git clone` the repository and then run `yarn` (to install dependencies) and `yarn start` to start the development server.
+
+In case you prefer a more isolated test environment, you can also use Docker or even the more convenient `docker-compose up` to start the development server.
 
 ## Contributing
 
@@ -28,9 +30,10 @@ Pull requests are welcome. For major changes, please open an issue first to disc
 
 Please use the following `prettier` configuration on all javascript files (or run `yarn format`):
 
-
-		prettier --print-width 120 ---tab-width 4 -single-quote --jsx-bracket-same-line --arrow-parens avoid --trailing-comma es5 --write src/**/*.js
-
+```
+prettier --print-width 120 ---tab-width 4 -single-quote --jsx-bracket-same-line --arrow-parens avoid --trailing-comma es5 --write src/**/*.js
+```
 
 ## License
+
 Kanbanist is proudly open source software licensed under [MIT](LICENSE).

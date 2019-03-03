@@ -1,0 +1,8 @@
+version: "3"
+services:
+  kanbanist:
+    build: .
+    image: kanbanist:${KANBANIST_VERSION:-latest}
+    container_name: kabanist
+    ports:
+      - "${KANBANIST_PORT:-3000}:3000"
