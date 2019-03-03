@@ -6,3 +6,5 @@ services:
     container_name: kabanist
     ports:
       - "${KANBANIST_PORT:-3000}:3000"
+    volumes:
+      - ./:/data

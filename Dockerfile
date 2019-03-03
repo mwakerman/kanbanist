@@ -1,11 +1,11 @@
 FROM alpine:3.9
 
+RUN apk add --no-cache tini yarn
+
 WORKDIR /data
-COPY . .
-RUN apk add --no-cache tini yarn \
-    && yarn
+COPY docker-entrypoint.sh .
 
 EXPOSE 3000
-ENTRYPOINT ["/sbin/tini", "--"]
+ENTRYPOINT ["/sbin/tini", "--", "/data/docker-entrypoint.sh"]
 CMD ["yarn", "start"]
 
