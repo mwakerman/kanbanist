@@ -437,16 +437,12 @@ function fetchSuccess(state, action) {
     const filteredLists = loadedLists.filter(el => filteredListIds.contains(el.id));
 
     // Create backlog.
-    // Important Note: when a label is deleted Todoist doesn't remove that label from any tasks that had that label
-    //                 but our Todoist client does filter those labels. So rather than just check if labels is empty
-    //                 we need to filter our backlog items to items that don't have a label that exists.
-    const labelIds = Set(labelList.map(l => l.id));
+    // Items will be filtered by the selected lists in Board.js
     const backlogList = new List({
         id: 0,
         title: 'Backlog',
         items: ImmutableList(
             items
-                .filter(item => Set.of(...item.labels).intersect(labelIds).size === 0)
                 .filter(item => {
                     // FIXME: remove items without a valid project (seen in wild, unsure how it happens)
                     const project = projectIdMap[item.project_id];

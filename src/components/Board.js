@@ -4,6 +4,7 @@ import flow from 'lodash/flow';
 import Dimensions from 'react-dimensions';
 import { Button, Intent, NonIdealState } from '@blueprintjs/core';
 import moment from 'moment';
+import { Set } from 'immutable';
 
 import Toolbar from './Toolbar';
 import ListsPanel from '../containers/ListsPanel';
@@ -209,11 +210,16 @@ class Board extends Component {
             return true;
         };
 
+        const filteredListIds = Set(filteredLists.map(l => l.id));
+        const selectedListIds = Set(lists.map(list => list.id).filter(listId => !filteredListIds.contains(listId)));
+
         const fullyFilteredLists = lists
-            .filter(list => !filteredLists.map(l => l.id).contains(list.id))
+            .filter(list => selectedListIds.contains(list.id))
             .map(list => list.setItems(list.items.filter(filterFn)));
 
-        const filteredBacklog = backlogList.setItems(backlogList.items.filter(filterFn));
+        const filteredBacklog = backlogList.setItems(
+            backlogList.items.filter(filterFn).filter(item => Set(item.labels).intersect(selectedListIds).size === 0)
+        );
 
         return (
             <div className="Board">
