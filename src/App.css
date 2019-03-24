@@ -26,7 +26,8 @@
 }
 
 .sr-only-focusable:active,
-.sr-only-focusable:focus {
+.sr-only-focusable:focus,
+.sr-only-focusable.active {
   position: static;
   width: auto;
   height: auto;
