@@ -58,7 +58,9 @@ class ListItem extends React.Component {
         return markdown
             .toHTML(todoistToMd)
             .replace(/<\/?p>/g, '')
-            .replace(/a href/g, 'a target="_blank" href');
+            .replace(/a href/g, 'a target="_blank" href')
+            .replace(/<h(\d)>/g, (_, num) => '#'.repeat(num))
+            .replace(/<\/h\d>/g, '');
     };
 
     formatOutlookLink = text => {
