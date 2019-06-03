@@ -69,6 +69,7 @@ export function load() {
         // Filters
         let filteredListIds = Immutable.List(jsState.lists.filteredLists.map(el => el.id));
         let filteredProjectIds = Immutable.List(jsState.lists.filteredProjects.map(project => project.id));
+        let selectedLabelIds = Immutable.List(jsState.lists.selectedLabels.map(list => list.id));
         let filteredPriorities = Priorities.filter(p => jsState.lists.filteredPriorities.indexOf(p.id) >= 0);
 
         loadedState.lists.filterDueDate = Immutable.Map({
@@ -87,9 +88,10 @@ export function load() {
         // Filter from URL overrides redux state
 
         // Build map from query string to objects
-        const { lists, projects, priorities, start, end, assigned, filter } = Immutable.List([
+        const { lists, projects, labels, priorities, start, end, assigned, filter } = Immutable.List([
             'lists',
             'projects',
+            'labels',
             'priorities',
             'start',
             'end',
@@ -108,7 +110,7 @@ export function load() {
         }, {});
 
         // If ANY params are present then we ignore redux state for all filters and just use the URL
-        if (lists || projects || priorities || start || end || assigned || filter) {
+        if (lists || projects || labels || priorities || start || end || assigned || filter) {
             // lists
             filteredListIds = lists
                 ? loadedState.lists.lists.filter(el => lists.indexOf(el.title) < 0).map(el => el.id)
@@ -116,6 +118,10 @@ export function load() {
 
             filteredProjectIds = projects
                 ? loadedState.lists.projects.filter(el => projects.indexOf(el.name) < 0).map(el => el.id)
+                : Immutable.List.of();
+
+            selectedLabelIds = labels
+                ? loadedState.lists.lists.filter(list => labels.indexOf(list.title) >= 0).map(list => list.id)
                 : Immutable.List.of();
 
             filteredPriorities = priorities
@@ -138,6 +144,9 @@ export function load() {
         loadedState.lists.filteredLists = loadedState.lists.lists.filter(list => filteredListIds.contains(list.id));
         loadedState.lists.filteredProjects = loadedState.lists.projects.filter(project =>
             filteredProjectIds.contains(project.id)
+        );
+        loadedState.lists.selectedLabels = loadedState.lists.filteredLists.filter(list =>
+            selectedLabelIds.contains(list.id)
         );
         loadedState.lists.defaultProjectId = jsState.lists.defaultProjectId;
         loadedState.lists.filteredPriorities = filteredPriorities;

@@ -48,6 +48,7 @@ const initialState = {
     projects: ImmutableList.of(),
     defaultProjectId: undefined,
     filteredProjects: ImmutableList.of(),
+    selectedLabels: ImmutableList.of(),
     filterDueDate: Map({ startDate: null, endDate: null }),
     filteredPriorities: ImmutableList.of(),
     showIfResponsible: false,
@@ -76,6 +77,7 @@ export const types = {
     CLEAR_ALL: 'CLEAR_ALL',
     UPDATE_LISTS_FILTER: 'UPDATE_LISTS_FILTER',
     UPDATE_PROJECTS_FILTER: 'UPDATE_PROJECTS_FILTER',
+    UPDATE_LABELS_FILTER: 'UPDATE_LABELS_FILTER',
     UPDATE_DUE_DATE_FILTER: 'UPDATE_DUE_DATE_FILTER',
     UPDATE_PRIORITY_FILTER: 'UPDATE_PRIORITY_FILTER',
     TOGGLE_ASSIGNEE_FILTER: 'TOGGLE_ASSIGNEE_FILTER',
@@ -118,6 +120,7 @@ export const actions = {
     clearAll: () => ({ type: types.CLEAR_ALL }),
     updateListsFilter: filteredLists => ({ type: types.UPDATE_LISTS_FILTER, payload: { filteredLists } }),
     updateProjectsFilter: filteredProjects => ({ type: types.UPDATE_PROJECTS_FILTER, payload: { filteredProjects } }),
+    updateLabelsFilter: selectedLabels => ({ type: types.UPDATE_LABELS_FILTER, payload: { selectedLabels } }),
     updateDueDateFilter: (startDate, endDate) => ({
         type: types.UPDATE_DUE_DATE_FILTER,
         payload: { startDate, endDate },
@@ -371,6 +374,11 @@ function updateProjectsFilter(state, action) {
     return { ...state, filteredProjects };
 }
 
+function updateLabelsFilter(state, action) {
+    const { selectedLabels } = action.payload;
+    return { ...state, selectedLabels };
+}
+
 function updatePriorityFilter(state, action) {
     const { filteredPriorities } = action.payload;
     return { ...state, filteredPriorities };
@@ -437,16 +445,12 @@ function fetchSuccess(state, action) {
     const filteredLists = loadedLists.filter(el => filteredListIds.contains(el.id));
 
     // Create backlog.
-    // Important Note: when a label is deleted Todoist doesn't remove that label from any tasks that had that label
-    //                 but our Todoist client does filter those labels. So rather than just check if labels is empty
-    //                 we need to filter our backlog items to items that don't have a label that exists.
-    const labelIds = Set(labelList.map(l => l.id));
+    // Items will be filtered by the selected lists in Board.js
     const backlogList = new List({
         id: 0,
         title: 'Backlog',
         items: ImmutableList(
             items
-                .filter(item => Set.of(...item.labels).intersect(labelIds).size === 0)
                 .filter(item => {
                     // FIXME: remove items without a valid project (seen in wild, unsure how it happens)
                     const project = projectIdMap[item.project_id];
@@ -466,12 +470,16 @@ function fetchSuccess(state, action) {
     const filteredProjectsIds = state.filteredProjects.map(el => el.id);
     const filteredProjects = loadedProjects.filter(el => filteredProjectsIds.contains(el.id));
 
+    const selectedLabelIds = state.selectedLabels.map(list => list.id);
+    const selectedLabels = loadedLists.filter(list => selectedLabelIds.contains(list.id));
+
     return {
         ...state,
         projects: loadedProjects,
         filteredProjects,
         lists: loadedLists,
         filteredLists,
+        selectedLabels,
         backlog: backlogList,
         fetching: false,
         fetchFail: null,
@@ -583,6 +591,8 @@ export const reducer = (state = initialState, action) => {
             return updateListsFilter(state, action);
         case types.UPDATE_PROJECTS_FILTER:
             return updateProjectsFilter(state, action);
+        case types.UPDATE_LABELS_FILTER:
+            return updateLabelsFilter(state, action);
         case types.UPDATE_DUE_DATE_FILTER:
             return updateDueDateFilter(state, action);
         case types.UPDATE_PRIORITY_FILTER:
@@ -604,6 +614,7 @@ export const reducer = (state = initialState, action) => {
                 ...state,
                 filteredProjects: initialState.filteredProjects,
                 filteredLists: initialState.filteredLists,
+                selectedLabels: initialState.selectedLabels,
                 filterDueDate: initialState.filterDueDate,
                 filteredPriorities: initialState.filteredPriorities,
                 showIfResponsible: false,

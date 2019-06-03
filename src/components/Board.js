@@ -4,6 +4,7 @@ import flow from 'lodash/flow';
 import Dimensions from 'react-dimensions';
 import { Button, Intent, NonIdealState } from '@blueprintjs/core';
 import moment from 'moment';
+import { Set } from 'immutable';
 
 import Toolbar from './Toolbar';
 import ListsPanel from '../containers/ListsPanel';
@@ -41,6 +42,7 @@ class Board extends Component {
             filteredLists,
             lists,
             filteredProjects,
+            selectedLabels,
             filteredPriorities,
             filterDueDate,
             namedFilter,
@@ -68,6 +70,8 @@ class Board extends Component {
                 updateListsFilter={actions.lists.updateListsFilter}
                 filteredProjects={filteredProjects}
                 updateProjectsFilter={actions.lists.updateProjectsFilter}
+                selectedLabels={selectedLabels}
+                updateLabelsFilter={actions.lists.updateLabelsFilter}
                 onClearFilters={actions.lists.clearFilters}
             />
         );
@@ -141,6 +145,7 @@ class Board extends Component {
 
         // Filtering Lists & Items
         const filteredProjectIds = filteredProjects.map(project => project.id);
+        const selectedLabelIds = Set(selectedLabels.map(label => label.id));
         const filterStartMoment = filterDueDate.get('startDate', null);
         const filterEndMoment = filterDueDate.get('endDate', null);
         const dueDateFilterIsSet = filterStartMoment !== null && filterEndMoment !== null;
@@ -148,6 +153,10 @@ class Board extends Component {
         const filterFn = item => {
             // project
             if (filteredProjectIds.contains(item.project.id)) {
+                return false;
+            }
+
+            if (!selectedLabelIds.isSubset(Set(item.labels))) {
                 return false;
             }
 
@@ -209,11 +218,16 @@ class Board extends Component {
             return true;
         };
 
+        const filteredListIds = Set(filteredLists.map(l => l.id));
+        const selectedListIds = Set(lists.map(list => list.id).filter(listId => !filteredListIds.contains(listId)));
+
         const fullyFilteredLists = lists
-            .filter(list => !filteredLists.map(l => l.id).contains(list.id))
+            .filter(list => selectedListIds.contains(list.id))
             .map(list => list.setItems(list.items.filter(filterFn)));
 
-        const filteredBacklog = backlogList.setItems(backlogList.items.filter(filterFn));
+        const filteredBacklog = backlogList.setItems(
+            backlogList.items.filter(filterFn).filter(item => Set(item.labels).intersect(selectedListIds).size === 0)
+        );
 
         return (
             <div className="Board">
@@ -239,6 +253,7 @@ const mapStateToProps = state => {
         projects: state.lists.projects,
         defaultProjectId: state.lists.defaultProjectId,
         filteredProjects: state.lists.filteredProjects,
+        selectedLabels: state.lists.selectedLabels,
         filteredPriorities: state.lists.filteredPriorities,
         filterDueDate: state.lists.filterDueDate,
         namedFilter: state.lists.namedFilter,

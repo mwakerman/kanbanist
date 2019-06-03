@@ -20,6 +20,8 @@ class Toolbar extends Component {
             projects,
             filteredProjects,
             updateProjectsFilter,
+            selectedLabels,
+            updateLabelsFilter,
             showIfResponsible,
             toggleAssigneeFilter,
             onClearFilters,
@@ -77,6 +79,29 @@ class Toolbar extends Component {
             />
         );
 
+        const labelsFilterMenu = (
+            <FilterMenu
+                title="Labels Filter"
+                checkboxItems={filteredLists}
+                selectedItems={filteredLists.filter(el => selectedLabels.contains(el))}
+                labelProperty="title"
+                onChange={(label, isChecked) => {
+                    if (isChecked) {
+                        updateLabelsFilter(selectedLabels.push(label));
+                    } else {
+                        updateLabelsFilter(selectedLabels.filter(el => el.id !== label.id));
+                    }
+                }}
+                onChangeAll={isChecked => {
+                    if (isChecked) {
+                        updateLabelsFilter(filteredLists);
+                    } else {
+                        updateLabelsFilter(selectedLabels.filter(el => false));
+                    }
+                }}
+            />
+        );
+
         const priorityFilterMenu = (
             <FilterMenu
                 title="Priority Filter"
@@ -118,6 +143,15 @@ class Toolbar extends Component {
                     position={Position.BOTTOM}>
                     <Button text="Projects" iconName="projects" className="Toolbar-button" />
                 </Popover>
+                <Popover
+                    className="Toolbar-button Toolbar-button-popover"
+                    content={labelsFilterMenu}
+                    interactionKind={PopoverInteractionKind.CLICK}
+                    popoverClassName="pt-popover-content-sizing"
+                    position={Position.BOTTOM}>
+                    <Button text="Labels" iconName="tag" className="Toolbar-button" />
+                </Popover>
+
                 <Popover
                     className="Toolbar-button Toolbar-button-popover"
                     content={priorityFilterMenu}
