@@ -107,33 +107,32 @@ export function load() {
             return params;
         }, {});
 
-        // If ANY params are present then we ignore redux state for all filters and just use the URL
-        if (lists || projects || priorities || start || end || assigned || filter) {
-            // lists
-            filteredListIds = lists
-                ? loadedState.lists.lists.filter(el => lists.indexOf(el.title) < 0).map(el => el.id)
-                : Immutable.List.of();
+        // we always treat the URL as the store of filtering state (this allows the filters to be unset by visiting a clean URL)
 
-            filteredProjectIds = projects
-                ? loadedState.lists.projects.filter(el => projects.indexOf(el.name) < 0).map(el => el.id)
-                : Immutable.List.of();
+        // lists
+        filteredListIds = lists
+            ? loadedState.lists.lists.filter(el => lists.indexOf(el.title) < 0).map(el => el.id)
+            : Immutable.List.of();
 
-            filteredPriorities = priorities
-                ? Priorities.filter(el => priorities.indexOf(el.id) < 0)
-                : Immutable.List.of();
+        filteredProjectIds = projects
+            ? loadedState.lists.projects.filter(el => projects.indexOf(el.name) < 0).map(el => el.id)
+            : Immutable.List.of();
 
-            // due date
-            loadedState.lists.filterDueDate = Immutable.Map({
-                startDate: start ? moment(start) : null,
-                endDate: end ? moment(end) : null,
-            });
+        filteredPriorities = priorities
+            ? Priorities.filter(el => priorities.indexOf(el.id) < 0)
+            : Immutable.List.of();
 
-            // assigned
-            showIfResponsible = assigned;
+        // due date
+        loadedState.lists.filterDueDate = Immutable.Map({
+            startDate: start ? moment(start) : null,
+            endDate: end ? moment(end) : null,
+        });
 
-            // named
-            namedFilter = filter ? NAMED_FILTERS[filter] : null;
-        }
+        // assigned
+        showIfResponsible = assigned;
+
+        // named
+        namedFilter = filter ? NAMED_FILTERS[filter] : null;
 
         loadedState.lists.filteredLists = loadedState.lists.lists.filter(list => filteredListIds.contains(list.id));
         loadedState.lists.filteredProjects = loadedState.lists.projects.filter(project =>
