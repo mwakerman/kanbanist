@@ -1,6 +1,6 @@
 // http://redux.js.org/docs/advanced/AsyncActions.html#note-on-fetch
 // Ensure Promise polyfill is present.
-import 'babel-polyfill';
+import "core-js";
 import React from 'react';
 import ReactDOM from 'react-dom';
 import Raven from 'raven-js';

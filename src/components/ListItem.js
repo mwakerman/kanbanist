@@ -212,7 +212,7 @@ class ListItem extends React.Component {
                             className="task-link sr-only sr-only-focusable"
                             href={`https://todoist.com/showTask?id=${item.id}`}
                             target="_blank"
-                            rel="noopener"
+                            rel="noopener noreferrer"
                             aria-label="Open in Todoist">
                             <Icon iconName="link" iconSize={5} />
                         </a>

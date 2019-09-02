@@ -3,20 +3,21 @@
   "version": "1.0.0",
   "devDependencies": {
     "cross-env": "5.2.0",
-    "react-scripts": "1.0.13"
+    "react-scripts": "3.1.1"
   },
   "dependencies": {
     "@blueprintjs/core": "^1.30.0",
     "@blueprintjs/datetime": "^1.12.0",
     "@blueprintjs/labs": "^0.5.0",
-    "babel-polyfill": "^6.22.0",
+    "core-js": "^3.2.1",
     "immutable": "^3.8.1",
     "isomorphic-fetch": "^2.2.1",
     "jquery": "^3.1.1",
-    "lodash": "^4.17.4",
+    "lodash": "^4.17.15",
     "markdown": "^0.5.0",
     "moment": "^2.18.1",
     "prop-types": "^15.5.10",
+    "querystringify": "^2.1.1",
     "raven-js": "^3.21.0",
     "react": "15.4.0",
     "react-addons-css-transition-group": "^15.4.2",
@@ -42,5 +43,17 @@
     "format": "prettier --config .prettierrc --write src/**/*.js",
     "eject": "react-scripts eject",
     "deploy": "yarn && REACT_APP_VERSION=\"$(git rev-parse --short HEAD)\" yarn build && cp netlify/* build/"
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
   }
 }
