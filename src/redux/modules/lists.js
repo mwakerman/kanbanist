@@ -426,7 +426,13 @@ function fetchSuccess(state, action) {
                             return !!project;
                         })
                         .filter(item => !item.checked)
-                        .map(item => new Item({ ...item, due_date_utc: item.due && item.due.date, text: item.content, project: projectIdMap[item.project_id] }))
+                        .map(item => new Item({
+                            ...item,
+                            due_date_utc: item.due && item.due.date,
+                            recurring: item.due && item.due.is_recurring,
+                            text: item.content,
+                            project: projectIdMap[item.project_id],
+                        }))
                 ),
             });
         })
