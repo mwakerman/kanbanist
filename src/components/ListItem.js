@@ -180,7 +180,7 @@ class ListItem extends React.Component {
             dynamicStyle['opacity'] = '0.5';
         }
 
-        const isRecurring = item.date_string ? item.date_string.search(/every/i) >= 0 : false;
+        const isRecurring = item.recurring;
         const classes = `ListItem pt-card pt-interactive pt-elevation-2 color-${item.project.color}`;
 
         return connectDragSource(
