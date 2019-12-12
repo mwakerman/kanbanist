@@ -1,5 +1,5 @@
 import React from 'react';
-import moment from 'moment';
+import { parseDueDate } from '../core/DueDate';
 
 const DISPLAY_TYPE = {
     DATE: 'DATE',
@@ -11,7 +11,7 @@ export default class ListItemDueDate extends React.Component {
         super(props);
         const { dueDate } = props;
         this.state = {
-            dueMoment: dueDate ? moment(dueDate) : null,
+            dueDate: dueDate ? parseDueDate(dueDate) : null,
             displayType: DISPLAY_TYPE.DATE,
         };
     }
@@ -23,25 +23,25 @@ export default class ListItemDueDate extends React.Component {
     };
 
     render() {
-        const { dueMoment, displayType } = this.state;
+        const { dueDate, displayType } = this.state;
 
-        if (dueMoment === null) {
+        if (dueDate === null) {
             return null;
         }
 
         let text = '';
         switch (displayType) {
             case DISPLAY_TYPE.DATE:
-                text = dueMoment.format('Do MMM');
+                text = dueDate.format();
                 break;
             case DISPLAY_TYPE.RELATIVE:
-                text = dueMoment.fromNow();
+                text = dueDate.due_moment.fromNow();
                 break;
             default:
                 console.error('Unknown displayType for ListItemDueDate: ', displayType);
         }
 
-        const classes = ['ListItem-project-duedate', dueMoment.isBefore(moment()) ? 'overdue' : ''].join(' ');
+        const classes = ['ListItem-project-duedate', dueDate.isExpired() ? 'overdue' : ''].join(' ');
 
         return (
             <span className={classes} onClick={this.handleToggleDisplayType}>
