@@ -6,6 +6,7 @@ export default class NewListItemInput extends React.Component {
         super(props);
         this.state = {
             newCommentText: '',
+            isEditing: false,
         };
     }
 
@@ -17,6 +18,7 @@ export default class NewListItemInput extends React.Component {
     handleBlur = () => {
         this.setState({
             newCommentText: '',
+            isEditing: false,
         });
     };
 
@@ -24,30 +26,33 @@ export default class NewListItemInput extends React.Component {
      * Invoked when user changes input in any way.
      */
     handleChange = text => {
+        const { onAdd } = this.props;
         // Make EditableText handle 'enter' press as submission (normally it would just
         // add a newline to the comment).
         const isNewLine = text.indexOf('\n') >= 0;
         if (isNewLine) {
             const itemText = this.state.newCommentText;
-            this.setState({ newCommentText: '' }, () => this.props.onAdd(itemText));
+            this.setState({ newCommentText: '', isEditing: false }, () => onAdd(itemText));
         } else {
-            this.setState({
-                newCommentText: text,
-            });
+            this.setState({ newCommentText: text });
         }
     };
 
     render() {
         return (
             <div className="NewListItemInput">
-                <EditableText
-                    multiline
-                    value={this.state.newCommentText}
-                    minLines={1}
-                    placeholder="Add item (press enter to save)..."
-                    onChange={this.handleChange}
-                    onConfirm={this.handleBlur}
-                />
+                <div onClick={() => this.setState({ isEditing: true })}>
+                    <EditableText
+                        isEditing={this.state.isEditing}
+                        multiline
+                        value={this.state.newCommentText}
+                        minLines={1}
+                        placeholder="Add item (press enter to save)..."
+                        onChange={this.handleChange}
+                        onConfirm={this.handleBlur}
+                        onCancel={() => this.setState({ isEditing: false })}
+                    />
+                </div>
             </div>
         );
     }

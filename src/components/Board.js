@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import flow from 'lodash/flow';
-import Dimensions from 'react-dimensions';
 import { Button, Intent, NonIdealState } from '@blueprintjs/core';
 import moment from 'moment';
 
@@ -54,11 +53,6 @@ class Board extends Component {
 
         const atBoard = this.props.location.pathname === '/board';
         const shouldShowToolbar = atBoard && showToolbar;
-
-        const dynamicStyle = {};
-        if (shouldShowToolbar) {
-            dynamicStyle['marginTop'] = '50px';
-        }
 
         const toolbar = (
             <Toolbar
@@ -217,9 +211,8 @@ class Board extends Component {
 
         return (
             <div className="Board">
-                {shouldShowToolbar ? toolbar : <div />}
+                {shouldShowToolbar ? toolbar : null}
                 <ListsPanel
-                    style={dynamicStyle}
                     lists={fullyFilteredLists}
                     showBacklog={showBacklog}
                     backlogList={filteredBacklog}
@@ -250,6 +243,5 @@ const mapStateToProps = state => {
 };
 
 export default flow(
-    Dimensions({ className: 'Board-Wrapper' }),
-    connect(mapStateToProps)
+    connect(mapStateToProps),
 )(Board);

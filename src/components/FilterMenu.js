@@ -16,14 +16,12 @@ export default class FilterMenu extends React.Component {
     };
 
     render() {
-        const { checkboxItems, selectedItems, title, labelProperty } = this.props;
+        const { checkboxItems, selectedItems, labelProperty } = this.props;
 
         const allSelected = checkboxItems.filter(el => !selectedItems.contains(el)).isEmpty();
 
         return (
             <div className="FilterMenu">
-                <h6>{title}</h6>
-                <hr />
                 <div className="FilterMenu-checkboxes">
                     <Checkbox
                         style={{ fontWeight: 'bold' }}

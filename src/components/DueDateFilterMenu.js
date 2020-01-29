@@ -1,22 +1,11 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { Button, Intent } from '@blueprintjs/core';
+import { Button } from '@blueprintjs/core';
 import { DateRangePicker } from '@blueprintjs/datetime';
-import '../../node_modules/@blueprintjs/datetime/dist/blueprint-datetime.css';
+import '@blueprintjs/datetime/lib/css/blueprint-datetime.css';
 import moment from 'moment';
 
 import { actions as listActions, NAMED_FILTERS } from '../redux/modules/lists';
-
-// DateRangePicker shortcuts
-const beginningOfWeek = moment().startOf('week');
-const endOfWeek = moment().endOf('week');
-const beginningOfMonth = moment().startOf('month');
-const endOfMonth = moment().endOf('month');
-
-const dueDateShortcuts = [
-    { label: 'This week', dateRange: [beginningOfWeek.toDate(), endOfWeek.toDate()] },
-    { label: 'This month', dateRange: [beginningOfMonth.toDate(), endOfMonth.toDate()] },
-];
 
 class DueDateFilterMenu extends React.Component {
     handleDateChange = dateArray => {
@@ -26,12 +15,6 @@ class DueDateFilterMenu extends React.Component {
         const endMoment = endDate !== null ? moment(endDate).endOf('day') : null;
         setNamedFilter(null);
         updateDueDateFilter(startMoment, endMoment);
-    };
-
-    handleClear = () => {
-        const { updateDueDateFilter, setNamedFilter } = this.props;
-        updateDueDateFilter(null, null);
-        setNamedFilter(null);
     };
 
     handleNamedFilter = filter => {
@@ -55,11 +38,10 @@ class DueDateFilterMenu extends React.Component {
         const startDate = startDateMoment !== null ? startDateMoment.toDate() : null;
         const endDate = endDateMoment !== null ? endDateMoment.toDate() : null;
         return (
-            <div>
-                <h6>Due Date Filter</h6>
-                <hr />
+            <div className="DueDateFilterMenu FilterMenu">
                 <p><strong>Dynamic</strong></p>
                 <Button
+                    small={true}
                     className="Toolbar-button"
                     text="Today"
                     title="Dynamic filter - Today"
@@ -73,6 +55,7 @@ class DueDateFilterMenu extends React.Component {
                     active={namedFilter === NAMED_FILTERS.TODAY}
                 />
                 <Button
+                    small={true}
                     className="Toolbar-button"
                     text="Next 7 Days"
                     title="Dynamic filter - Next 7 days"
@@ -86,6 +69,7 @@ class DueDateFilterMenu extends React.Component {
                     active={namedFilter === NAMED_FILTERS.NEXT_7_DAYS}
                 />
                 <Button
+                    small={true}
                     className="Toolbar-button"
                     title="Dynamic filter - No Due Date"
                     text="No Due Date"
@@ -98,22 +82,13 @@ class DueDateFilterMenu extends React.Component {
                     }}
                     active={namedFilter === NAMED_FILTERS.NO_DUE_DATE}
                 />
-                <hr />
-                <p><strong>Date Range</strong></p>
                 <br/>
-                <div>
-                    <DateRangePicker
-                        value={[startDate, endDate]}
-                        onChange={this.handleDateChange}
-                        shortcuts={dueDateShortcuts}
-                    />
-                </div>
-                <Button
-                    text="Clear"
-                    iconName="delete"
-                    intent={Intent.DANGER}
-                    className="pt-minimal"
-                    onClick={this.handleClear}
+                <br/>
+                <p><strong>Date Range</strong></p>
+                <DateRangePicker
+                    value={[startDate, endDate]}
+                    onChange={this.handleDateChange}
+                    shortcuts={false}
                 />
             </div>
         );

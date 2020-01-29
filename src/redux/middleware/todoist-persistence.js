@@ -1,6 +1,7 @@
 import Todoist from '../../todoist-client/Todoist';
 import { types, actions, isListBacklog } from '../modules/lists';
 import List from '../../core/List';
+import Item from "../../core/Item";
 
 const todoistPersistenceMiddleware = store => next => action => {
     const state = store.getState();
@@ -10,38 +11,6 @@ const todoistPersistenceMiddleware = store => next => action => {
     const defaultProject = projects.find(p => p.id === project_id);
 
     switch (action.type) {
-        case types.MOVE_TO_LIST:
-            function persistLabelChange() {
-                const { toList, item, fromList } = action.payload;
-
-                // no-op if user puts item back where it was
-                if (toList.id === fromList.id) {
-                    return;
-                }
-
-                // get all labels for item
-                const existingItemLabels = state.lists.lists
-                    .filter(l => l.items.map(i => i.id).includes(item.id))
-                    .map(l => l.id);
-
-                let labels = existingItemLabels;
-
-                if (!isListBacklog(fromList)) {
-                    labels = labels.filter(l => l !== fromList.id);
-                }
-
-                if (!isListBacklog(toList)) {
-                    labels = labels.push(toList.id);
-                }
-
-                labels = labels.toSet().toArray();
-
-                const updatedItem = { id: item.id, labels };
-                return Todoist.updateItem(token, updatedItem);
-            }
-            persistLabelChange();
-            break;
-
         case types.ADD_LIST_ITEM:
             function persistAddListItem() {
                 const { list, item } = action.payload;
@@ -53,6 +22,7 @@ const todoistPersistenceMiddleware = store => next => action => {
                     hasProjectSyntax || !defaultProject ? '' : `#${defaultProject.name.replaceAll(' ', '')}`;
 
                 Todoist.quickAddItem(token, `${content} ${labelString} ${projectString}`, temp_id)
+                    .then(({ id: itemId }) => store.dispatch(actions.updateId(Item, temp_id, `${itemId}`)))
                     .then(() => store.dispatch(actions.fetchLists()))
                     .catch(err => console.error('could not add item', err));
             }
@@ -144,34 +114,45 @@ const todoistPersistenceMiddleware = store => next => action => {
             persistLabelRename();
             break;
 
-        case types.REORDER_LIST:
-            function persistListReorder() {
-                // TODO: code duplicated from lists.js redux module.
-                const { lists } = state.lists;
-                const { list, newSibling } = action.payload;
+        case types.MOVE_ITEM: {
+            const { itemId, fromListId, toListId } = action.payload;
 
-                const listIds = lists.map(el => el.id);
-                const currentIdx = listIds.indexOf(list.id);
-                const idxOfSibling = listIds.indexOf(newSibling.id);
-                const newIndex = currentIdx < idxOfSibling ? idxOfSibling : idxOfSibling + 1;
-
-                if (newIndex !== currentIdx) {
-                    const labelOrderMap = listIds
-                        .filter(el => el !== list.id)
-                        .splice(newIndex, 0, list.id)
-                        .filter(el => el !== 0)
-                        .reduce((mapping, listId, idx) => {
-                            mapping[listId] = idx;
-                            return mapping;
-                        }, {});
-
-                    Todoist.updateLabelOrder(token, labelOrderMap);
-                }
+            if (fromListId === toListId) {
+                break;
             }
-            persistListReorder();
+
+            const fromList = state.lists.lists.push(state.lists.backlog).find(l => l.id === fromListId);
+            const toList = state.lists.lists.push(state.lists.backlog).find(l => l.id === toListId);
+            const item = fromList.get('items').find(i => i.id === itemId);
+
+            // get all labels for item
+            const labels = state.lists.lists
+                .filter(l => l.items.map(i => i.id).includes(itemId))
+                .map(l => l.id)
+                .concat(isListBacklog(toList) ? [] : [toListId])
+                .filter(listId => !isListBacklog(listId) && listId !== fromListId)
+                .toSet().toArray();
+
+            const updatedItem = { id: item.id, labels };
+            Todoist.updateItem(token, updatedItem);
             break;
+        }
+        case types.UPDATE_LIST_INDEX: {
+            const { listId, newIndex } = action.payload;
+            const { lists } = state.lists;
+
+            const list = lists.find(l => l.id === listId);
+            const labelOrderMap = lists
+                .filter(el => el.id !== listId)
+                .insert(newIndex, list)
+                .map(l => l.id)
+                .reduce((acc, lid, idx) => Object.assign(acc, { [lid]: idx }), {});
+
+            Todoist.updateLabelOrder(token, labelOrderMap);
+            break;
+        }
         default:
-        // Nothing.
+            // Nothing.
     }
 
     // Fire next action.

@@ -45,6 +45,8 @@ class LoginDialog extends React.Component {
         );
     };
 
+    isValidToken = () => this.state.apiTokenField.length >= 40;
+
     render() {
         return (
             <Dialog
@@ -53,10 +55,10 @@ class LoginDialog extends React.Component {
                 canOutsideClickClose={false}
                 enforceFocus={true}
                 isCloseButtonShown={false}
-                iconName="log-in"
+                icon="log-in"
                 isOpen={!this.props.loggedIn}
                 title="Login">
-                <div className="pt-dialog-body">
+                <div className="bp3-dialog-body">
                     <p>Please enter your Todoist API token below.</p>
                     <p className="small-text">
                         Your <strong>API token</strong> can be found in Todoist Settings under the{' '}
@@ -73,10 +75,10 @@ class LoginDialog extends React.Component {
                     <InputGroup
                         value={this.state.apiTokenField}
                         intent={this.state.loginIntent}
-                        leftIconName="user"
+                        leftIcon="user"
                         type="text"
                         placeholder="API Token e.g. 2cc9d26a60a8ad40d08724d92db9ad496ae6fe20"
-                        onKeyPress={() => {}}
+                        onKeyPress={(e) => e.key === 'Enter' && this.isValidToken() && this.handleLogin()}
                         onChange={event => this.setState({ apiTokenField: event.target.value })}
                     />
                     <p className="small-text">
@@ -84,8 +86,8 @@ class LoginDialog extends React.Component {
                         is not clearing website data (localStorage) when you close the window.
                     </p>
                 </div>
-                <div className="pt-dialog-footer">
-                    <div className="pt-dialog-footer-actions">
+                <div className="bp3-dialog-footer">
+                    <div className="bp3-dialog-footer-actions">
                         <Link to="/">
                             <Button text="Cancel" intent={Intent.DANGER} />
                         </Link>
@@ -94,7 +96,7 @@ class LoginDialog extends React.Component {
                             onClick={this.handleLogin}
                             text="Login"
                             loading={this.state.loading}
-                            disabled={this.state.apiTokenField.length < 40}
+                            disabled={!this.isValidToken()}
                         />
                     </div>
                 </div>

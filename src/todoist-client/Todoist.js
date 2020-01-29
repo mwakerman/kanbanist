@@ -43,12 +43,21 @@ export default class Todoist {
                 labels.sort((l1, l2) => l1.item_order - l2.item_order);
                 labels.forEach(label => {
                     label.name = label.name.replaceAll('_', ' ').trim();
+                    label.id = `${label.id}`; // convert to string for react-beautiful-dnd
                 });
 
                 labels = labels.filter(label => label.is_deleted === 0);
 
-                // Items
-                const items = todoistData['items'];
+                // Items - convert ids to strings for react-beautiful-dnd
+                const items = todoistData['items']
+                    .map(i => ({
+                        ...i,
+                        id: `${i.id}`,
+                        labels: i.labels
+                            .map(labelId => `${labelId}`)
+                            // remove deleted labels
+                            .filter(labelId => labels.some(l => l.id === labelId))
+                    }));
 
                 // Projects
                 const projects = todoistData['projects'];

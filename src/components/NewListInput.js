@@ -50,7 +50,7 @@ class NewListInput extends React.Component {
         const addButton = (
             <Button
                 className={Classes.MINIMAL}
-                iconName="add"
+                icon="add"
                 intent={Intent.SUCCESS}
                 disabled={this.state.text.length === 0}
                 onClick={this.handleAdd}

@@ -1,6 +1,6 @@
 import React from 'react';
-import { ConnectedRouter as Router } from 'react-router-redux';
 import { Route, Switch, Link } from 'react-router-dom';
+import { ConnectedRouter as Router } from 'connected-react-router'
 import ReactGA from 'react-ga';
 import { FocusStyleManager } from '@blueprintjs/core';
 
@@ -9,7 +9,9 @@ import Header from './containers/Header';
 import Footer from './containers/Footer';
 
 import './App.css';
-import '../node_modules/@blueprintjs/core/dist/blueprint.css';
+import '@blueprintjs/icons/lib/css/blueprint-icons.css';
+import '@blueprintjs/core/lib/css/blueprint.css';
+import '@blueprintjs/datetime/lib/css/blueprint-datetime.css';
 
 // Pages
 import Issues from './pages/Issues';

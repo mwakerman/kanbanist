@@ -1,13 +1,13 @@
 import React from 'react';
-import { EditableText, Button, Checkbox, Icon, Intent } from '@blueprintjs/core';
-import '../../node_modules/@blueprintjs/core/dist/blueprint.css';
-import { DragSource } from 'react-dnd';
-import { DragAndDropTypes } from './Constants';
+import { EditableText, Checkbox, Icon } from '@blueprintjs/core';
+import '@blueprintjs/core/lib/css/blueprint.css';
 import { markdown } from 'markdown';
 import $ from 'jquery';
 import ListItemDueDate from './ListItemDueDate';
 import Todoist from '../todoist-client/Todoist';
 import ReactTooltip from 'react-tooltip';
+import { Draggable } from "react-beautiful-dnd";
+import classNames from  "classnames";
 
 const outlookRegex = /\[\[\s*outlook=id3=(.*?),([^\]]*)\]\]/;
 const isOutlookText = rawText => {
@@ -15,23 +15,11 @@ const isOutlookText = rawText => {
 };
 
 class ListItem extends React.Component {
-    /*
-     * The "isActuallyEditing" state solves a bug in BlueprintJS whereby the
-     * before pseudo-element is incorrectly sized if a EditableText component
-     * is mounted with "isEditing" set to true.
-     *
-     * Rather, we mount the component with the isEditing prop set to false and
-     * immediately set it to true.
-     *
-     * Hopefully I get around to submitting an issue about this on GitHub.
-     *
-     */
 
     constructor(props) {
         super(props);
         this.state = {
             isEditing: false,
-            isActuallyEditing: false,
             previousRawText: props.item.text,
             rawText: props.item.text,
             formattedText: this.format(props.item.text),
@@ -94,29 +82,11 @@ class ListItem extends React.Component {
     };
 
     handleCheck = () => {
-        const millisToWait = 800;
-        const completeInABit = wait => setTimeout(() => this.props.onComplete(this.props.item), wait);
-
-        this.setState(
-            {
-                checked: true,
-            },
-            () => completeInABit(millisToWait)
-        );
+        this.setState({ checked: true }, () => setTimeout(() => this.props.onComplete(this.props.item), 800));
     };
 
     handleOnEdit = () => {
-        // See comment at the top of this class as to why we do this.
-        this.setState(
-            {
-                isEditing: true,
-            },
-            () => {
-                this.setState({
-                    isActuallyEditing: true,
-                });
-            }
-        );
+        this.setState({ isEditing: true });
     };
 
     handleCancel = () => {
@@ -124,7 +94,6 @@ class ListItem extends React.Component {
             formattedText: this.format(this.state.previousRawText),
             rawText: this.state.previousRawText,
             isEditing: false,
-            isActuallyEditing: false,
         });
     };
 
@@ -140,7 +109,6 @@ class ListItem extends React.Component {
         this.setState({
             previousRawText: rawText,
             isEditing: false,
-            isActuallyEditing: false,
             formattedText: this.format(rawText),
         });
     };
@@ -166,112 +134,91 @@ class ListItem extends React.Component {
     }
 
     render() {
-        const { connectDragSource, isDragging, item, collaborator } = this.props;
-        const { checked, rawText, formattedText, isEditing, isActuallyEditing } = this.state;
+        const { item, collaborator, index, instanceList } = this.props;
+        const { checked, rawText, formattedText, isEditing } = this.state;
 
         const isOutlook = isOutlookText(rawText);
-
-        // Inline style
-        const dynamicStyle = {};
-        if (isDragging) {
-            dynamicStyle['display'] = 'none';
-        }
-        if (this.state.checked) {
-            dynamicStyle['opacity'] = '0.5';
-        }
-
         const isRecurring = item.recurring;
-        const classes = `ListItem pt-card pt-interactive pt-elevation-2 color-${item.project.color}`;
+        const opacity = checked ? 0.5 : 1;
 
-        return connectDragSource(
-            <div style={dynamicStyle} id={item.id} className={classes}>
-                <div className="ListItem-inner">
-                    <div className="ListItem-inner-top">
-                        <Checkbox
-                            className={`ListItem-checkbox priority-${item.priority}`}
-                            onChange={this.handleCheck}
-                            checked={checked}
-                            disabled={isEditing}
-                        />
-                        {isEditing ? (
-                            <EditableText
-                                className="ListItem-text"
-                                multiline
-                                value={!isOutlook ? rawText : this.getOutlookContent(rawText)}
-                                isEditing={isActuallyEditing}
-                                onChange={this.handleChange}
-                                disabled={checked}
-                            />
-                        ) : (
-                            <div className="ListItem-text ListItem-text-formatted" onClick={this.handleOnEdit}>
-                                {isOutlook ? <Icon iconName="envelope" style={{ marginRight: '5px' }} /> : null}
-                                <span dangerouslySetInnerHTML={{ __html: formattedText }} />
-                            </div>
-                        )}
-                        <a
-                            className="task-link sr-only sr-only-focusable"
-                            href={`https://todoist.com/showTask?id=${item.id}`}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            aria-label="Open in Todoist">
-                            <Icon iconName="link" iconSize={5} />
-                        </a>
-                    </div>
-                    <div className="ListItem-inner-bottom">
-                        {isEditing ? (
-                            <div className="ListItem-edit-buttons">
-                                <Button
-                                    className="ListItem-edit-button"
-                                    text="Save"
-                                    intent={Intent.SUCCESS}
-                                    onClick={this.updateItem}
+        return (
+            <Draggable
+                key={`${item.id}`}
+                draggableId={`item-${item.id}-${instanceList.id}`}
+                index={index}
+            >
+                {(provided, snapshot) => (
+                    <div
+                        ref={provided.innerRef}
+                        {...provided.draggableProps}
+                        {...provided.dragHandleProps}
+                        style={{ opacity, ...provided.draggableProps.style }}
+                        id={item.id}
+                        className={classNames('ListItem', `color-${item.project.color}`, { 'dragging': snapshot.isDragging })}
+                    >
+                        <div className="ListItem-inner">
+                            <div className="ListItem-inner-top">
+                                <Checkbox
+                                    className={`ListItem-checkbox priority-${item.priority}`}
+                                    onChange={this.handleCheck}
+                                    checked={checked}
+                                    disabled={isEditing}
                                 />
-                                <Button className="ListItem-edit-button" text="Cancel" onClick={this.handleCancel} />
+                                {isEditing ? (
+                                    <EditableText
+                                        className="ListItem-text"
+                                        multiline
+                                        value={!isOutlook ? rawText : this.getOutlookContent(rawText)}
+                                        isEditing={true}
+                                        onChange={this.handleChange}
+                                        disabled={checked}
+                                        onConfirm={(/* for some reason this fires on blur */) => this.setState({ isEditing: false, rawText: item.text })}
+                                        onCancel={() => this.setState({ isEditing: false, rawText: item.text })}
+                                    />
+                                ) : (
+                                    <div className="ListItem-text ListItem-text-formatted" onClick={this.handleOnEdit}>
+                                        <span dangerouslySetInnerHTML={{ __html: formattedText }} />
+                                    </div>
+                                )}
                             </div>
-                        ) : (
-                            <div className="non-edit-text">
-                                <span className="ListItem-project-name">{item.project.name}</span>
-                                {isRecurring ? (
-                                    <Icon className="ListItem-recurring-icon" iconName="exchange" iconSize={16} />
-                                ) : null}
-                                <ListItemDueDate dueDate={item.due_date_utc} />
-                                {collaborator ? (
-                                    collaborator.image_id ? (
-                                        <img
-                                            className="ListItem-project-avatar"
-                                            alt={`Assigned to ${collaborator.full_name}`}
-                                            width="18"
-                                            height="18"
-                                            src={Todoist.getAvatarUrl(collaborator.image_id, 'small')}
-                                            data-tip={collaborator.full_name}
-                                        />
-                                    ) : (
-                                        <span data-tip={collaborator.full_name}>
+                            <div className="ListItem-inner-bottom">
+                                <div className="non-edit-text">
+                                    <span className="ListItem-project-name">{item.project.name}</span>
+                                    {isOutlook ? (
+                                        <Icon className="ListItem-recurring-icon" icon="envelope" iconSize={12} />
+                                    ) : null}
+                                    {isRecurring ? (
+                                        <Icon className="ListItem-recurring-icon" icon="exchange" iconSize={16} />
+                                    ) : null}
+                                    <ListItemDueDate dueDate={item.due_date_utc} />
+                                    {collaborator ? (
+                                        collaborator.image_id ? (
+                                            <img
+                                                className="ListItem-project-avatar"
+                                                alt={`Assigned to ${collaborator.full_name}`}
+                                                width="18"
+                                                height="18"
+                                                src={Todoist.getAvatarUrl(collaborator.image_id, 'small')}
+                                                data-tip={collaborator.full_name}
+                                            />
+                                        ) : (
+                                            <span data-tip={collaborator.full_name}>
                                             {collaborator.full_name
                                                 .split(' ')
                                                 .map(a => a[0])
                                                 .join('')}
                                         </span>
-                                    )
-                                ) : null}
+                                        )
+                                    ) : null}
+                                </div>
                             </div>
-                        )}
+                        </div>
+                        <ReactTooltip place="bottom" effect="solid" />
                     </div>
-                </div>
-                <ReactTooltip place="bottom" effect="solid" />
-            </div>
+                )}
+            </Draggable>
         );
     }
 }
 
-const listItemSource = {
-    beginDrag(props) {
-        const { item, instanceList } = props;
-        return { item, instanceList };
-    },
-};
-
-export default DragSource(DragAndDropTypes.LIST_ITEM, listItemSource, (connect, monitor) => ({
-    isDragging: monitor.isDragging(),
-    connectDragSource: connect.dragSource(),
-}))(ListItem);
+export default ListItem;
