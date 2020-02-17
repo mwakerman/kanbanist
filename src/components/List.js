@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { DropTarget } from 'react-dnd';
 import flow from 'lodash/flow';
-import { Intent } from '@blueprintjs/core';
+import { Alert, Intent } from '@blueprintjs/core';
 
 import ListTitle from './ListTitle';
 import ListItem from './ListItem';
@@ -21,6 +21,7 @@ class List extends React.Component {
         super(props);
         this.state = {
             allChecked: false,
+            isDeleteConfirmationOpen: false,
         };
     }
 
@@ -75,8 +76,40 @@ class List extends React.Component {
         );
     };
 
-    handleDelete = () => {
+    renderDeleteConfirmation = () => {
+        const { list } = this.props;
+        const { isDeleteConfirmationOpen } = this.state;
+
+        return (
+            <Alert
+                canEscapeKeyCancel={true}
+                canOutsideClickCancel={true}
+                cancelButtonText="Cancel"
+                confirmButtonText="Delete list"
+                icon="trash"
+                intent={Intent.DANGER}
+                isOpen={isDeleteConfirmationOpen}
+                onCancel={this.handleCancelDelete}
+                onConfirm={this.handleConfirmDelete}>
+                <p>
+                    Are you sure you want to delete the list <b>{`${list.title}`}</b>? You will not be able to undo
+                    this.
+                </p>
+            </Alert>
+        );
+    };
+
+    handleCancelDelete = () => {
+        this.setState({ isDeleteConfirmationOpen: false });
+    };
+
+    handleConfirmDelete = () => {
+        this.setState({ isDeleteConfirmationOpen: false });
         this.props.onListDelete(this.props.list);
+    };
+
+    handleAttemptDelete = () => {
+        this.setState({ isDeleteConfirmationOpen: true });
     };
 
     render() {
@@ -150,10 +183,11 @@ class List extends React.Component {
         return connectListDropTarget(
             connectListItemDropTarget(
                 <div style={dynamicStyle} className={className + ' List list-panel-item'}>
+                    {this.renderDeleteConfirmation()}
                     <ListTitle
                         title={list.title}
                         onRename={this.handleRename}
-                        onDelete={this.handleDelete}
+                        onDelete={this.handleAttemptDelete}
                         onCompleteAll={this.handleCompleteAll}
                         disabled={!canEditTitle}
                         showListMenu={showListMenu}
