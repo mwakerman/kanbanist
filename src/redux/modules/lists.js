@@ -410,7 +410,7 @@ function fetchSuccess(state, action) {
                             project: projectIdMap[item.project_id],
                         }))
 
-                ).sortBy((item) => listIdMap[label.id].get('items').findIndex(i => i.id === item.id)),
+                ).sortBy((item) => listIdMap[label.id] ? listIdMap[label.id].get('items').findIndex(i => i.id === item.id) : 0),
             });
         })
     );
