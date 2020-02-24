@@ -276,17 +276,6 @@ p {
   flex-direction: row;
 }
 
-.ListItem:hover .task-link {
-  position: static;
-  width: auto;
-  height: auto;
-  overflow: visible;
-  clip: auto;
-  white-space: normal;
-  -webkit-clip-path: none;
-  clip-path: none;
-}
-
 .ListItem .priority-4 .bp3-control-indicator {
   border-color: RGB(170, 5, 15);
   background: RGBA(170, 5, 15, 0.5) none;
@@ -347,7 +336,20 @@ p {
   margin-left: 7px;
   font-size: 11px;
   color: #8A9BA8;
+}
+
+.ListItem a.task-link-wrapper {
   margin-right: auto;
+  margin-left: 5px;
+}
+
+.ListItem .ListItem-task-link {
+  vertical-align: unset;
+  visibility: hidden;
+}
+
+.ListItem:hover .ListItem-task-link {
+  visibility: visible;
 }
 
 .ListItem-recurring-icon {

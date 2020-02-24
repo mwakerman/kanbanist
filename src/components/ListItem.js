@@ -184,11 +184,14 @@ class ListItem extends React.Component {
                             <div className="ListItem-inner-bottom">
                                 <div className="non-edit-text">
                                     <span className="ListItem-project-name">{item.project.name}</span>
+                                    <a href={`https://todoist.com/showTask?id=${item.id}`} className="task-link-wrapper">
+                                        <Icon className="ListItem-task-link" icon="link" iconSize={10} />
+                                    </a>
                                     {isOutlook ? (
                                         <Icon className="ListItem-recurring-icon" icon="envelope" iconSize={12} />
                                     ) : null}
                                     {isRecurring ? (
-                                        <Icon className="ListItem-recurring-icon" icon="exchange" iconSize={16} />
+                                        <Icon className="ListItem-recurring-icon" icon="exchange" iconSize={14} />
                                     ) : null}
                                     <ListItemDueDate dueDate={item.due_date_utc} />
                                     {collaborator ? (
