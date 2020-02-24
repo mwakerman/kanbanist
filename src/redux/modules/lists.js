@@ -18,6 +18,7 @@ export const isInboxProject = project => {
 };
 
 export const SORT_BY = {
+    USER_SET: 'Board',
     DATE_ADDED: 'Date Added',
     DUE_DATE: 'Due Date',
     PRIORITY: 'Priority',
@@ -374,14 +375,11 @@ function fetchRequest(state, action) {
 
 function fetchSuccess(state, action) {
     const { labelList, items, projects, collaborators } = action.payload;
-    const { lists, backlog } = state;
 
     const projectIdMap = projects.reduce((mapping, project) => {
         mapping[project.id] = new Project(project);
         return mapping;
     }, {});
-
-    const listIdMap = lists.reduce((mapping, list) => Object.assign(mapping, { [list.id] : list }), {});
 
     // Create Lists.
     const loadedLists = ImmutableList(
@@ -410,7 +408,7 @@ function fetchSuccess(state, action) {
                             project: projectIdMap[item.project_id],
                         }))
 
-                ).sortBy((item) => listIdMap[label.id] ? listIdMap[label.id].get('items').findIndex(i => i.id === item.id) : 0),
+                ),
             });
         })
     );
@@ -446,7 +444,7 @@ function fetchSuccess(state, action) {
                     text: item.content,
                     project: projectIdMap[item.project_id],
                 }))
-        ).sortBy((item) => backlog.get('items').findIndex(i => i.id === item.id)),
+        ),
     });
 
     // Create projects and filtered projects
@@ -528,13 +526,21 @@ function updateListIndex(state, action) {
     };
 }
 
-function sortLists(state) {
+function sortLists(state, prevState) {
     const { lists, backlog } = state;
-
     const sortByField = state.sortBy.get('field');
     const sortByDirection = state.sortBy.get('direction');
-    let sortFn = (a, b) => 0;
+    let sortFn = (a, b, list) => 0;
     switch (sortByField) {
+        case SORT_BY.USER_SET:
+            sortFn = (a, b, list) => {
+                let aIndex = list ? list.get('items').findIndex(i => i.id === a.id) : 1;
+                let bIndex = list ? list.get('items').findIndex(i => i.id === b.id) : 0;
+                aIndex = aIndex > -1 ? aIndex : list.get('items').size;
+                bIndex = bIndex > -1 ? bIndex : list.get('items').size;
+                return aIndex <= bIndex ? -1 : 1;
+            };
+            break;
         case SORT_BY.DATE_ADDED:
             sortFn = (a, b) => {
                 const aDateCreated = moment(a.date_added);
@@ -582,7 +588,14 @@ function sortLists(state) {
             console.warn(`unknown sortBy.field: ${sortByField}`);
     }
 
-    return { ...state, lists: lists.map(list => list.sort(sortFn)), backlog: backlog.sort(sortFn) };
+    return {
+        ...state,
+        lists: lists.map(list => {
+            const prevList = prevState.lists.find(l => l.id === list.id);
+            return list.sort((a,b) => sortFn(a, b, prevList));
+        }),
+        backlog: backlog.sort((a,b) => sortFn(a, b, backlog))
+    };
 }
 
 export const reducer = (state = initialState, action) => {
@@ -596,11 +609,11 @@ export const reducer = (state = initialState, action) => {
         case types.COMPLETE_LIST:
             return completeList(state, action);
         case types.ADD_LIST_ITEM:
-            return sortLists(addListItem(state, action));
+            return sortLists(addListItem(state, action), state);
         case types.UPDATE_LIST_ITEM:
             return updateListItem(state, action);
         case types.UPDATE_ID:
-            return sortLists(updateId(state, action));
+            return sortLists(updateId(state, action), state);
         case types.COMPLETE_LIST_ITEM:
             return completeListItem(state, action);
 
@@ -620,7 +633,7 @@ export const reducer = (state = initialState, action) => {
         case types.FETCH_REQUEST_SENT:
             return fetchRequest(state, action);
         case types.FETCH_SUCCESSFUL:
-            return sortLists(fetchSuccess(state, action));
+            return sortLists(fetchSuccess(state, action), state);
         case types.FETCH_FAILURE:
             return fetchFailure(state, action);
 
@@ -641,7 +654,7 @@ export const reducer = (state = initialState, action) => {
         case types.SET_DEFAULT_PROJECT:
             return setDefaultProject(state, action);
         case types.SET_SORT_BY:
-            return sortLists(setSortBy(state, action));
+            return sortLists(setSortBy(state, action), state);
 
         case types.MOVE_ITEM:
             return moveItem(state, action);
