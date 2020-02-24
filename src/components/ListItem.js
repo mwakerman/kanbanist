@@ -5,7 +5,6 @@ import { markdown } from 'markdown';
 import $ from 'jquery';
 import ListItemDueDate from './ListItemDueDate';
 import Todoist from '../todoist-client/Todoist';
-import ReactTooltip from 'react-tooltip';
 import { Draggable } from "react-beautiful-dnd";
 import classNames from  "classnames";
 
@@ -216,7 +215,6 @@ class ListItem extends React.Component {
                                 </div>
                             </div>
                         </div>
-                        <ReactTooltip place="bottom" effect="solid" />
                     </div>
                 )}
             </Draggable>

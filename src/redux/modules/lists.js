@@ -55,7 +55,7 @@ const initialState = {
     namedFilter: null,
     fetching: false,
     fetchFail: null,
-    sortBy: Map({ field: SORT_BY.PROJECT_ORDER, direction: SORT_BY_DIRECTION.ASC }),
+    sortBy: Map({ field: SORT_BY.USER_SET, direction: SORT_BY_DIRECTION.ASC }),
     collaborators: [],
 };
 
