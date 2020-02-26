@@ -21,13 +21,13 @@ The missing kanban board for [Todoist](https://todoist.com/).
 		</a>
 	</div>
 	<div style="padding-left: 8px;">
-		supports Kanbanist by providing free access to it's range of cross-browser testing tools.
+		BrowserStack supports Kanbanist by providing free access to it's range of cross-browser testing tools.
 	</div>
 </div>
 
 ## Known Issues
 
-- As described in [Issue 9](https://github.com/mwakerman/kanbanist/issues/9), the drag-and-drop functionality is visually buggy (offset) and not working at all in Safari.
+- As described in [Issue 74](https://github.com/mwakerman/kanbanist/issues/74), you cannot scroll the board by dragging a task to the edge as is possible in Trello. This is an issue with the underlying drag-and-drop library: the (otherwise excellent) [`react-beautiful-dnd`](https://github.com/atlassian/react-beautiful-dnd).
 
 ## Development
 
@@ -44,6 +44,13 @@ Please use the following `prettier` configuration on all javascript files (or ru
 
 		prettier --print-width 120 ---tab-width 4 -single-quote --jsx-bracket-same-line --arrow-parens avoid --trailing-comma es5 --write src/**/*.js
 
+## Say Thanks
+
+Say thanks, spread the word and make the world a better place.
+
+and/or
+
+<a href="https://www.buymeacoffee.com/RUZ5hab" target="_blank"><img src="https://cdn.buymeacoffee.com/buttons/default-yellow.png" alt="Buy Me A Coffee" style="height: 51px !important;width: 217px !important;" ></a>
 
 ## License
 Kanbanist is proudly open source software licensed under [MIT](LICENSE).
