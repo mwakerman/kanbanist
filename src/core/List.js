@@ -16,6 +16,10 @@ export default class List extends ListRecord {
         return new List({ id: this.id, title: this.title, items: this.items.insert(0, item) });
     }
 
+    insert(index, item) {
+        return new List({ id: this.id, title: this.title, items: this.items.insert(index, item) })
+    }
+
     updateWith({ id, title, items }) {
         return new List({
             id: id || this.id,

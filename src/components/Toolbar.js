@@ -1,15 +1,16 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { Button, Classes, Intent, MenuItem, Position, Popover, PopoverInteractionKind } from '@blueprintjs/core';
-import { Select } from '@blueprintjs/labs';
-
-import '@blueprintjs/labs/dist/blueprint-labs.css';
-
+import { Button, AnchorButton, Classes, Intent, MenuItem, Popover } from '@blueprintjs/core';
+import { Select } from '@blueprintjs/select';
+import '@blueprintjs/select/lib/css/blueprint-select.css';
+import { PopoverPosition } from "@blueprintjs/core/lib/cjs/components/popover/popoverSharedProps";
 import { actions as listsActions, SORT_BY, SORT_BY_DIRECTION } from '../redux/modules/lists';
 import FilterMenu from './FilterMenu';
 import DueDateFilterMenu from './DueDateFilterMenu';
 import { priorities } from '../core/Priority';
 import { getDescendents } from '../core/Project';
+
+import './Toolbar.css';
 
 class Toolbar extends Component {
     render() {
@@ -31,181 +32,140 @@ class Toolbar extends Component {
             setSortBy,
         } = this.props;
 
-        const listsFilterMenu = (
-            <FilterMenu
-                title="Lists Filter"
-                checkboxItems={lists}
-                selectedItems={lists.filter(el => !filteredLists.contains(el))}
-                onChange={(list, isChecked) => {
-                    if (isChecked) {
-                        updateListsFilter(filteredLists.filter(el => el.id !== list.id));
-                    } else {
-                        updateListsFilter(filteredLists.push(list));
-                    }
-                }}
-                onChangeAll={isChecked => {
-                    if (isChecked) {
-                        updateListsFilter(filteredLists.filter(el => false));
-                    } else {
-                        updateListsFilter(lists);
-                    }
-                }}
-            />
-        );
-
-        const projectsFilterMenu = (
-            <FilterMenu
-                title="Projects Filter"
-                checkboxItems={projects.sort((p1, p2) => Math.sign(p1.item_order - p2.item_order))}
-                selectedItems={projects.filter(el => !filteredProjects.contains(el))}
-                labelProperty="name"
-                onChange={(project, isChecked) => {
-                    const descendants = getDescendents(project, projects);
-                    if (isChecked) {
-                        updateProjectsFilter(filteredProjects.filter(el => !descendants.some(p => p.id === el.id)));
-                    } else {
-                        updateProjectsFilter(filteredProjects.push(...descendants));
-                    }
-                }}
-                onChangeAll={isChecked => {
-                    if (isChecked) {
-                        updateProjectsFilter(filteredProjects.filter(el => false));
-                    } else {
-                        updateProjectsFilter(projects);
-                    }
-                }}
-            />
-        );
-
-        const priorityFilterMenu = (
-            <FilterMenu
-                title="Priority Filter"
-                checkboxItems={priorities}
-                labelProperty="name"
-                selectedItems={priorities.filter(p => !filteredPriorities.contains(p))}
-                onChange={(priority, isChecked) => {
-                    if (isChecked) {
-                        updatePriorityFilter(filteredPriorities.filter(el => el.id !== priority.id));
-                    } else {
-                        updatePriorityFilter(filteredPriorities.push(priority));
-                    }
-                }}
-                onChangeAll={isChecked => {
-                    if (isChecked) {
-                        updatePriorityFilter(priorities.filter(el => false));
-                    } else {
-                        updatePriorityFilter(priorities);
-                    }
-                }}
-            />
-        );
-
         return (
             <div className="Toolbar">
-                <Popover
-                    className="Toolbar-button Toolbar-button-popover"
-                    content={listsFilterMenu}
-                    interactionKind={PopoverInteractionKind.CLICK}
-                    popoverClassName="pt-popover-content-sizing"
-                    position={Position.BOTTOM_LEFT}>
-                    <Button text="Lists" iconName="property" className="Toolbar-button" />
-                </Popover>
-                <Popover
-                    className="Toolbar-button Toolbar-button-popover"
-                    content={projectsFilterMenu}
-                    interactionKind={PopoverInteractionKind.CLICK}
-                    popoverClassName="pt-popover-content-sizing"
-                    position={Position.BOTTOM}>
-                    <Button text="Projects" iconName="projects" className="Toolbar-button" />
-                </Popover>
-                <Popover
-                    className="Toolbar-button Toolbar-button-popover"
-                    content={priorityFilterMenu}
-                    interactionKind={PopoverInteractionKind.CLICK}
-                    popoverClassName="pt-popover-content-sizing"
-                    position={Position.BOTTOM}>
-                    <Button text="Priority" iconName="flag" className="Toolbar-button" />
-                </Popover>
-                <Popover
-                    className="Toolbar-button Toolbar-button-popover"
-                    content={<DueDateFilterMenu />}
-                    interactionKind={PopoverInteractionKind.CLICK}
-                    popoverClassName="pt-popover-content-sizing"
-                    position={Position.BOTTOM}>
-                    <Button text="Due Date" iconName="calendar" className="Toolbar-button" />
-                </Popover>
-                <Button
-                    text="Assigned to me"
-                    iconName="user"
-                    className="Toolbar-button"
-                    active={showIfResponsible}
-                    onClick={toggleAssigneeFilter}
-                />
-                {/*<Button*/}
-                {/*text="Query"*/}
-                {/*iconName="search"*/}
-                {/*className="Toolbar-button"*/}
-                {/*/>*/}
-                <Button
-                    text="Clear Filters"
-                    iconName="remove"
-                    intent={Intent.DANGER}
-                    className="Toolbar-button"
-                    onClick={onClearFilters}
-                />
-                <span className="light-divider pt-navbar-divider" />
-                <Select
-                    className="Toolbar-button"
-                    items={projects}
-                    itemRenderer={({ handleClick, item, isActive }) => (
-                        <MenuItem
-                            className={item.id === defaultProjectId ? Classes.ACTIVE : ''}
-                            key={item.id}
-                            onClick={handleClick}
-                            text={item.name}
+                <div className="inner">
+                    <Popover position={PopoverPosition.BOTTOM_RIGHT} className="Toolbar-item">
+                        <AnchorButton text="Lists" icon="property"/>
+                        <FilterMenu
+                            checkboxItems={lists}
+                            selectedItems={lists.filter(el => !filteredLists.contains(el))}
+                            onChange={(list, checked) => {
+                                const newFilteredLists = checked
+                                    ? filteredLists.filter(el => el.id !== list.id)
+                                    : filteredLists.push(list);
+
+                                updateListsFilter(newFilteredLists);
+                            }}
+                            onChangeAll={checked => updateListsFilter(checked ? filteredLists.filter(el => false) : lists)}
                         />
-                    )}
-                    onItemSelect={item => setDefaultProject(item.id)}
-                    filterable={false}>
-                    <Button text="New items project" iconName="add-to-artifact" rightIconName="double-caret-vertical" />
-                </Select>
-                <Select
-                    className="Toolbar-button"
-                    items={Object.keys(SORT_BY).map(k => ({ key: k, value: SORT_BY[k] }))}
-                    itemRenderer={({ handleClick, item }) => {
-                        const isActive = sortBy.get('field') === item.value;
-                        const isAscending = sortBy.get('direction') === SORT_BY_DIRECTION.ASC;
-                        let icon = 'blank';
-                        if (isActive) {
-                            icon = isAscending ? 'caret-up' : 'caret-down';
-                        }
-                        return (
-                            <MenuItem
-                                className={isActive ? Classes.ACTIVE : ''}
-                                key={item.key}
-                                onClick={handleClick}
-                                text={item.value}
-                                iconName={icon}
-                            />
-                        );
-                    }}
-                    onItemSelect={item => {
-                        const isActive = sortBy.get('field') === item.value;
-                        const isAscending = sortBy.get('direction') === SORT_BY_DIRECTION.ASC;
-                        if (isActive) {
-                            if (isAscending) {
-                                setSortBy(item.key, SORT_BY_DIRECTION.DESC);
+                    </Popover>
+                    <Popover className="Toolbar-item">
+                        <AnchorButton text="Projects" icon="projects"/>
+                        <FilterMenu
+                            checkboxItems={projects.sort((p1, p2) => Math.sign(p1.item_order - p2.item_order))}
+                            selectedItems={projects.filter(el => !filteredProjects.contains(el))}
+                            labelProperty="name"
+                            onChange={(project, checked) => {
+                                const descendants = getDescendents(project, projects);
+                                const newFilteredProjects = checked
+                                    ? filteredProjects.filter(el => !descendants.some(p => p.id === el.id))
+                                    : filteredProjects.push(...descendants);
+
+                                updateProjectsFilter(newFilteredProjects);
+                            }}
+                            onChangeAll={checked => updateProjectsFilter(checked ? filteredProjects.filter(el => false) : projects)}
+                        />
+                    </Popover>
+                    <Popover className="Toolbar-item">
+                        <AnchorButton text="Priority" icon="flag"/>
+                        <FilterMenu
+                            checkboxItems={priorities}
+                            labelProperty="name"
+                            selectedItems={priorities.filter(p => !filteredPriorities.contains(p))}
+                            onChange={(priority, checked) => {
+                                const newFilteredPriorities = checked
+                                    ? filteredPriorities.filter(el => el.id !== priority.id)
+                                    : filteredPriorities.push(priority);
+
+                                updatePriorityFilter(newFilteredPriorities);
+                            }}
+                            onChangeAll={checked => updatePriorityFilter(checked ? priorities.filter(el => false) : priorities)}
+                        />
+                    </Popover>
+                    <Popover className="Toolbar-item">
+                        <AnchorButton text="Due Date" icon="calendar"/>
+                        <DueDateFilterMenu />
+                    </Popover>
+                    <Button
+                        className="Toolbar-item"
+                        text="Assigned to me"
+                        icon="user"
+                        active={showIfResponsible}
+                        onClick={toggleAssigneeFilter}
+                    />
+                    <Button
+                        className="Toolbar-item"
+                        text="Clear Filters"
+                        icon="remove"
+                        intent={Intent.DANGER}
+                        onClick={onClearFilters}
+                    />
+                    <span className="light-divider bp3-navbar-divider" />
+                    <Select
+                        className="Toolbar-item"
+                        items={projects.toArray()}
+                        itemRenderer={(project, { handleClick, modifiers }) => {
+                            if (!modifiers.matchesPredicate) {
+                                return null;
+                            }
+                            return (
+                                <MenuItem
+                                    active={project.id === defaultProjectId}
+                                    disabled={modifiers.disabled}
+                                    key={project.id}
+                                    onClick={handleClick}
+                                    text={project.name}
+                                />
+                            );
+                        }}
+                        onItemSelect={({ id }) => setDefaultProject(id)}
+                        filterable={false}
+                    >
+                        <Button text="New Items Project" icon="add-to-artifact" rightIcon="double-caret-vertical" />
+                    </Select>
+                    <Select
+                        className="Toolbar-item"
+                        items={Object.keys(SORT_BY).map(k => ({ key: k, value: SORT_BY[k] }))}
+                        itemRenderer={(item, { handleClick, modifiers }) => {
+                            if (!modifiers.matchesPredicate) {
+                                return null;
+                            }
+
+                            const isActive = sortBy.get('field') === item.value;
+                            const isAscending = sortBy.get('direction') === SORT_BY_DIRECTION.ASC;
+                            let icon = 'blank';
+                            if (isActive) {
+                                icon = isAscending ? 'caret-up' : 'caret-down';
+                            }
+                            return (
+                                <MenuItem
+                                    className={isActive ? Classes.ACTIVE : ''}
+                                    key={item.key}
+                                    onClick={handleClick}
+                                    text={item.value}
+                                    icon={icon}
+                                />
+                            );
+                        }}
+                        onItemSelect={item => {
+                            const isActive = sortBy.get('field') === item.value;
+                            const isAscending = sortBy.get('direction') === SORT_BY_DIRECTION.ASC;
+                            if (isActive) {
+                                if (isAscending) {
+                                    setSortBy(item.key, SORT_BY_DIRECTION.DESC);
+                                } else {
+                                    setSortBy(item.key, SORT_BY_DIRECTION.ASC);
+                                }
                             } else {
+                                // set new field
                                 setSortBy(item.key, SORT_BY_DIRECTION.ASC);
                             }
-                        } else {
-                            // set new field
-                            setSortBy(item.key, SORT_BY_DIRECTION.ASC);
-                        }
-                    }}
-                    filterable={false}>
-                    <Button text="Sort lists by" iconName="sort" rightIconName="double-caret-vertical" />
-                </Select>
+                        }}
+                        filterable={false}>
+                        <Button text="Sort Lists" icon="sort" rightIcon="double-caret-vertical" />
+                    </Select>
+                </div>
             </div>
         );
     }

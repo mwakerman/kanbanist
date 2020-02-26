@@ -41,30 +41,25 @@
   clip-path: none;
 }
 
-.pt-navbar-heading a,
-.pt-navbar-heading a:hover,
-.pt-navbar-heading a:visited {
+.Header .bp3-navbar-heading a,
+.Header .bp3-navbar-heading a:hover,
+.Header .bp3-navbar-heading a:visited {
   text-decoration: none !important;
   color: inherit !important;
 }
 
 .main-content {
   display: flex;
+  flex-direction: column;
+  max-width: 100vw;
   flex: 1;
   min-height: calc(100vh - 50px - 50px);
-  margin-top: 50px;
-
   background-color: #E1E8ED;
-  overflow-x: auto;
-}
-
-.pacifico {
-  font-family: 'pacificoregular';
 }
 
 .page {
   width: 100%;
-  min-height: calc(100vh - 100px);
+  flex: 1;
   background-color: white;
   overflow: auto;
 }
@@ -72,7 +67,7 @@
 .page-content {
   margin-left: auto;
   margin-right: auto;
-  padding: 25px;
+  padding: 10px;
   min-width: 300px;
   max-width: 1000px;
 }
@@ -96,7 +91,7 @@
   font-family: 'Roboto', sans-serif;
 }
 
-.pt-navbar-heading {
+.Header .bp3-navbar-heading {
   font-size: 1.5em;
   color: #30404D;
   margin-right: 10px !important;
@@ -111,17 +106,11 @@ p {
   margin-bottom: 10px;
 }
 
-.Board-Wrapper {
-  display: flex;
-  flex-direction: column;
-  flex: 1;
-  height: auto !important;
-}
-
 .Board {
   display: flex;
   flex-direction: column;
   flex: 1;
+  height: 100%;
 }
 
 .Board-inner {
@@ -135,54 +124,42 @@ p {
   bottom: 65px !important;
 }
 
-.Toolbar {
-  width: 100%;
-  height: 50px;
-  background-color: #8A9BA8;
-  display: flex;
-  align-items: center;
-  padding: 10px 15px 10px 15px;
-  position: fixed;
-  top: 50px;
-  left: 0;
-  right: 0;
-  z-index: 10;
-  box-shadow: inset 0 0 3px #5C7080;
-}
-
-.Toolbar-button + .Toolbar-button {
-  margin-left: 10px;
-}
-
-/* float right */
-.Toolbar-button-settings {
-  margin-left: auto;
-}
-
-.light-divider {
-  border-left: 1px solid RGBA(235, 241, 245, 0.50);
-}
-
 .FilterMenu {
   width: 200px;
+  padding: 20px;
+}
+
+.DueDateFilterMenu {
+  width: 100%;
 }
 
 .FilterMenu-checkboxes {
-  max-height: calc((100vh - 200px) / 1.75);
+  max-height: calc((100vh - 200px) / 1.5);
   overflow-y: auto;
 }
 
 .ListsPanel {
+  min-height: 0;
+  flex: 1;
+}
+
+.ListPanel-inner {
   padding: 15px;
   display: flex;
   flex-direction: row;
   flex-wrap: nowrap;
   align-items: flex-start;
+  height: 100%;
+  overflow-x: auto;
+  user-select: none;
 }
 
 .List {
-  padding: 10px;
+  padding: 6px;
   border-radius: 3px;
+  max-height: 100%;
+  display: flex;
+  flex-direction: column;
 }
 
 .list-panel-item {
@@ -200,18 +177,22 @@ p {
 .list-panel-title {
   display: flex;
   flex-direction: row;
-  height: 30px;
   margin-bottom: 5px;
+  justify-content: space-between;
+  align-items: center;
+  padding: 3px;
 }
 
 .list-panel-title-text-div {
   display: flex;
   padding-left: 5px;
   width: 215px;
+  height: 25px;
   align-items: center;
 
   font-size: 16px;
   font-weight: 600;
+  font-family: 'Roboto', sans-serif;
 }
 
 .list-panel-title-text {
@@ -232,18 +213,31 @@ p {
   opacity: 1;
 }
 
+.List .new-list-item-input-wrapper {
+  padding: 0 5px 5px;
+}
+
 .NewListInput-input {
   margin-right: 15px;
 }
 
-.List .List-list-items {
-  max-height: calc(100vh - 225px);
+.List .List-list-items-wrapper {
+  min-width: 265px;
   overflow-y: hidden;
+  display: flex;
+  flex-direction: column;
+  padding: 5px 0px 5px 5px;
 }
 
-.List .List-list-items:hover {
-  max-height: calc(100vh - 225px);
-  overflow-y:auto;
+.List .List-list-items {
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding-right: 5px;
+}
+
+.List .List-list-items * {
+  /* don't allow the children of the scrollable element to be selected as an anchor node */
+  overflow-anchor: none;
 }
 
 .DraggableList {
@@ -260,9 +254,16 @@ p {
 
 .ListItem {
   padding: 13px;
-  margin-bottom: 10px;
-  max-width: 255px;
+  width: 255px;
   flex: 1 auto 255px;
+  background-color: white;
+  border: 1px solid #b5b5b5;
+  border-radius: 5px;
+  margin-bottom: 10px;
+}
+
+.ListItem.dragging {
+  box-shadow: 0px 0px 20px -9px rgba(0,0,0,0.75);
 }
 
 .ListItem-inner {
@@ -275,43 +276,32 @@ p {
   flex-direction: row;
 }
 
-.ListItem:hover .task-link {
-  position: static;
-  width: auto;
-  height: auto;
-  overflow: visible;
-  clip: auto;
-  white-space: normal;
-  -webkit-clip-path: none;
-  clip-path: none;
-}
-
-.ListItem .priority-4 .pt-control-indicator {
+.ListItem .priority-4 .bp3-control-indicator {
   border-color: RGB(170, 5, 15);
   background: RGBA(170, 5, 15, 0.5) none;
 }
 
-.ListItem .priority-3 .pt-control-indicator {
+.ListItem .priority-3 .bp3-control-indicator {
   border-color: RGB(246, 128, 46);
   background: RGBA(246, 128, 46, 0.5) none;
 }
 
-.ListItem .priority-2 .pt-control-indicator {
+.ListItem .priority-2 .bp3-control-indicator {
   border-color: RGB(251, 192, 63);
   background: RGBA(251, 192, 63, 0.5) none;
 }
 
-.ListItem .priority-4 .pt-control-indicator:hover {
+.ListItem .priority-4 .bp3-control-indicator:hover {
   border-color: RGB(170, 5, 15);
   background: RGBA(170, 5, 15, 0.7) none;
 }
 
-.ListItem .priority-3 .pt-control-indicator:hover {
+.ListItem .priority-3 .bp3-control-indicator:hover {
   border-color: RGB(246, 128, 46);
   background: RGBA(246, 128, 46, 0.7) none;
 }
 
-.ListItem .priority-2 .pt-control-indicator:hover {
+.ListItem .priority-2 .bp3-control-indicator:hover {
   border-color: RGB(251, 192, 63);
   background: RGBA(251, 192, 63, 0.7) none;
 }
@@ -346,7 +336,20 @@ p {
   margin-left: 7px;
   font-size: 11px;
   color: #8A9BA8;
+}
+
+.ListItem a.task-link-wrapper {
   margin-right: auto;
+  margin-left: 5px;
+}
+
+.ListItem .ListItem-task-link {
+  vertical-align: unset;
+  visibility: hidden;
+}
+
+.ListItem:hover .ListItem-task-link {
+  visibility: visible;
 }
 
 .ListItem-recurring-icon {
@@ -394,7 +397,7 @@ p {
   margin-bottom: 0px !important;
 }
 
-.ListItem-checkbox .pt-control-indicator {
+.ListItem-checkbox .bp3-control-indicator {
   border-radius: 10px !important;
 }
 
@@ -411,21 +414,17 @@ p {
 }
 
 .NewListItemInput {
-  margin-top: 10px;
+  margin-top: 5px;
+  padding: 0px;
 }
 
 /* fixes the scrollbar showing issue the Jesse reported */
-.pt-editable-text.pt-multiline .pt-editable-content {
+.bp3-editable-text.bp3-multiline .bp3-editable-content {
   overflow: hidden !important;
 }
 
 .small-text {
   font-size: 0.8em;
-}
-
-.light-text,
-.light-text:hover {
-  color: #F5F8FA !important;
 }
 
 .home-paragraph {
@@ -436,8 +435,10 @@ p {
   margin-left: 15px;
 }
 
-.pt-popover-content {
-  max-width: 800px !important;
+/* Blueprint */
+
+.bp3-button + .bp3-button {
+  margin-left: 5px;
 }
 
 /* Misc. */
@@ -604,4 +605,67 @@ body {
 
 .color-21 {
   border-bottom: solid 5px #777777;
+}
+
+
+/* API v8 colours */
+.color-30 {
+  border-bottom: solid 5px #b8256f;
+}
+.color-31 {
+  border-bottom: solid 5px #db4035;
+}
+.color-32 {
+  border-bottom: solid 5px #ff9933;
+}
+.color-33 {
+  border-bottom: solid 5px #fad000;
+}
+.color-34 {
+  border-bottom: solid 5px #afb83b;
+}
+.color-35 {
+  border-bottom: solid 5px #7ecc49;
+}
+.color-36 {
+  border-bottom: solid 5px #299438;
+}
+.color-37 {
+  border-bottom: solid 5px #6accbc;
+}
+.color-38 {
+  border-bottom: solid 5px #158fad;
+}
+.color-39 {
+  border-bottom: solid 5px #14aaf5;
+}
+.color-40 {
+  border-bottom: solid 5px #96c3eb;
+}
+.color-41 {
+  border-bottom: solid 5px #4073ff;
+}
+.color-42 {
+  border-bottom: solid 5px #884dff;
+}
+.color-43 {
+  border-bottom: solid 5px #af38eb;
+}
+.color-44 {
+  border-bottom: solid 5px #eb96eb;
+}
+.color-45 {
+  border-bottom: solid 5px #e05194;
+}
+.color-46 {
+  border-bottom: solid 5px #ff8d85;
+}
+.color-47 {
+  border-bottom: solid 5px #808080;
+}
+.color-48 {
+  border-bottom: solid 5px #b8b8b8;
+}
+.color-49 {
+  border-bottom: solid 5px #ccac93;
 }

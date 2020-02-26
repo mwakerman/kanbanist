@@ -1,11 +1,12 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { Link, withRouter } from 'react-router-dom';
-import { AnchorButton, Intent, Spinner } from '@blueprintjs/core';
+import { AnchorButton, Button, Intent, Navbar } from '@blueprintjs/core';
 
 import { actions as userActions } from '../redux/modules/user';
 import { actions as listsActions } from '../redux/modules/lists';
 import { actions as uiActions } from '../redux/modules/ui';
+import { Alignment } from "@blueprintjs/core/lib/cjs/common/alignment";
 
 class Header extends React.Component {
     render() {
@@ -15,8 +16,8 @@ class Header extends React.Component {
 
         const logoutButton = (
             <AnchorButton
-                className="light-text header-right"
                 text="Logout"
+                icon="log-out"
                 onClick={() => {
                     logout();
                     this.props.history.push('/');
@@ -28,8 +29,7 @@ class Header extends React.Component {
         const backlogButton = (
             <AnchorButton
                 text="Backlog"
-                iconName="comparison"
-                className="light-text header-right"
+                icon="comparison"
                 onClick={this.props.toggleBacklog}
                 intent={Intent.PRIMARY}
             />
@@ -37,53 +37,41 @@ class Header extends React.Component {
 
         const syncButton = (
             <AnchorButton
-                className="light-text header-right"
-                iconName="refresh"
+                loading={fetching}
+                icon="refresh"
                 onClick={() => fetchLists(token)}
                 intent={Intent.WARNING}
             />
         );
 
-        const spinner = <Spinner className="light-text pt-small header-right" intent={Intent.WARNING} />;
-
         const loginButton = (
-            <Link to="/board" className="light-text pt-button pt-intent-primary">
-                Login
+            <Link to="/board">
+                <Button text="Login" icon="log-in" intent={Intent.PRIMARY}/>
             </Link>
         );
 
         const toggleToolbarButton = (
-            <AnchorButton
-                text="Filters"
-                className="light-text header-right"
-                iconName="filter-list"
-                intent={Intent.PRIMARY}
-                onClick={toggleToolbar}
-            />
+            <AnchorButton text="Filters" icon="filter-list" intent={Intent.PRIMARY} onClick={toggleToolbar}/>
         );
 
-        const emptyDiv = <div className="header-right" style={{ marginLeft: '0px' }} />;
         const atBoard = this.props.history.location.pathname === '/board';
         const showBoardButtons = atBoard && loggedIn;
-        const boardButton = <button className="pt-button pt-minimal pt-icon-control">Board</button>;
+        const boardButton = <Button minimal={true} icon="control" text="Board" />;
 
         return (
-            <nav className="Header pt-navbar pt-fixed-top">
-                <div className="pt-navbar-group pt-align-left">
-                    <div className="pt-navbar-heading font-roboto">
-                        <Link to="/">Kanbanist</Link>
-                    </div>
-                    <span className="pt-navbar-divider" />
-                    {/* Board button does nothing if at /board (prevents potential query string being cleared) */}
+            <Navbar className="Header">
+                <Navbar.Group align={Alignment.LEFT}>
+                    <Navbar.Heading className="font-roboto"><Link to="/">Kanbanist</Link></Navbar.Heading>
+                    <Navbar.Divider />
                     {atBoard ? boardButton : <Link to={'/board'}>{boardButton}</Link>}
-                </div>
-                <div className="pt-navbar-group pt-align-right hide-if-small-500">
-                    {showBoardButtons ? (fetching ? spinner : syncButton) : emptyDiv}
-                    {showBoardButtons ? backlogButton : emptyDiv}
-                    {showBoardButtons ? toggleToolbarButton : emptyDiv}
+                </Navbar.Group>
+                <Navbar.Group align={Alignment.RIGHT} className="hide-if-small-500">
+                    {showBoardButtons ? syncButton : null}
+                    {showBoardButtons ? backlogButton : null}
+                    {showBoardButtons ? toggleToolbarButton : null}
                     {loggedIn ? logoutButton : loginButton}
-                </div>
-            </nav>
+                </Navbar.Group>
+            </Navbar>
         );
     }
 }

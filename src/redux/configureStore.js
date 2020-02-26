@@ -5,8 +5,8 @@ import Raven from 'raven-js';
 
 import { load, save, LOCAL_STORAGE_NAMESPACE } from './localStoragePersistence';
 
-import { routerReducer, routerMiddleware } from 'react-router-redux';
-import createHistory from 'history/createBrowserHistory';
+import { connectRouter, routerMiddleware } from 'connected-react-router';
+import { createBrowserHistory } from 'history';
 
 // Redux modules.
 import * as lists from './modules/lists';
@@ -36,16 +36,17 @@ const sentryMiddleware = store => next => action => {
 };
 
 export const configureStore = () => {
+    const history = createBrowserHistory();
+
     const reducer = combineReducers({
+        router: connectRouter(history),
         lists: lists.reducer,
         user: user.reducer,
         ui: ui.reducer,
-        router: routerReducer,
     });
 
     const logger = process.env.NODE_ENV === 'development' ? createLogger({ collapsed: true }) : emptyMiddleware;
 
-    const history = createHistory();
 
     const middleware = applyMiddleware(
         logger,

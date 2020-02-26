@@ -9,15 +9,16 @@ import { defaultPriority } from '../../core/Priority';
 
 const moment = require('moment');
 
-export const isListBacklog = list => {
-    return list.id === 0;
-};
+const isBacklogListId = listId => listId === "0";
+
+export const isListBacklog = list => isBacklogListId(list.id);
 
 export const isInboxProject = project => {
     return project.name === 'Inbox';
 };
 
 export const SORT_BY = {
+    USER_SET: 'Board',
     DATE_ADDED: 'Date Added',
     DUE_DATE: 'Due Date',
     PRIORITY: 'Priority',
@@ -54,7 +55,7 @@ const initialState = {
     namedFilter: null,
     fetching: false,
     fetchFail: null,
-    sortBy: Map({ field: SORT_BY.PROJECT_ORDER, direction: SORT_BY_DIRECTION.ASC }),
+    sortBy: Map({ field: SORT_BY.USER_SET, direction: SORT_BY_DIRECTION.ASC }),
     collaborators: [],
 };
 
@@ -62,10 +63,8 @@ export const types = {
     ADD_NEW_LIST: 'ADD_NEW_LIST',
     RENAME_LIST: 'RENAME_LIST',
     COMPLETE_LIST: 'COMPLETE_LIST',
-    REORDER_LIST: 'REORDER_LIST',
     DELETE_LIST: 'DELETE_LIST',
     ADD_LIST_ITEM: 'ADD_LIST_ITEM',
-    MOVE_TO_LIST: 'MOVE_TO_LIST',
     UPDATE_LIST_ITEM: 'UPDATE_LIST_ITEM',
     COMPLETE_LIST_ITEM: 'COMPLETE_LIST_ITEM',
     UPDATE_ID: 'UPDATE_ID',
@@ -83,17 +82,20 @@ export const types = {
     CLEAR_FILTERS: 'CLEAR_FILTERS',
     SET_DEFAULT_PROJECT: 'SET_DEFAULT_PROJECT',
     SET_SORT_BY: 'SET_SORT_BY',
+
+    // TODO: changing item dragging API with new action
+    MOVE_ITEM: 'MOVE_ITEM',
+    UPDATE_LIST_INDEX: 'UPDATE_LIST_INDEX',
 };
 
 export const actions = {
     addList: newList => ({ type: types.ADD_NEW_LIST, payload: newList }),
     renameList: (list, newListName) => ({ type: types.RENAME_LIST, payload: { list, newListName } }),
     completeList: list => ({ type: types.COMPLETE_LIST, payload: { list } }),
-    reorderList: (list, newSibling) => ({ type: types.REORDER_LIST, payload: { list, newSibling } }),
     deleteList: list => ({ type: types.DELETE_LIST, payload: { list } }),
     addListItem: (list, item, onHidden) => ({ type: types.ADD_LIST_ITEM, payload: { list, item, onHidden } }),
-    moveToList: (toList, item, fromList) => ({ type: types.MOVE_TO_LIST, payload: { toList, item, fromList } }),
     updateListItem: (item, text) => ({ type: types.UPDATE_LIST_ITEM, payload: { item, text } }),
+    updateId: (type, old_id, new_id) => ({ type: types.UPDATE_ID, payload: { type, old_id, new_id }}),
     completeListItem: item => ({ type: types.COMPLETE_LIST_ITEM, payload: { item } }),
     fetchLists: () => (dispatch, getState) => {
         const state = getState();
@@ -131,6 +133,14 @@ export const actions = {
     clearFilters: () => ({ type: types.CLEAR_FILTERS }),
     setDefaultProject: projectId => ({ type: types.SET_DEFAULT_PROJECT, payload: { projectId } }),
     setSortBy: (field, direction) => ({ type: types.SET_SORT_BY, payload: { field, direction } }),
+    moveItem: (itemId, fromListId, toListId, itemIndex) => ({
+        type: types.MOVE_ITEM,
+        payload: { itemId, fromListId, toListId, itemIndex }
+    }),
+    updateListIndex: (listId, newIndex) => ({
+        type: types.UPDATE_LIST_INDEX,
+        payload: { listId, newIndex }
+    }),
 };
 
 function addList(state, action) {
@@ -191,23 +201,6 @@ function completeList(state, action) {
     return { ...state, lists: updatedLists };
 }
 
-function reorderList(state, action) {
-    const { list, newSibling } = action.payload;
-    const { lists } = state;
-
-    const currentIdx = lists.indexOf(list);
-    const idxOfSibling = lists.indexOf(newSibling);
-    const newIndex = currentIdx < idxOfSibling ? idxOfSibling : idxOfSibling + 1;
-
-    // If we dragged a list onto its current older sibling.
-    if (newIndex === currentIdx) {
-        return state;
-    }
-
-    const updatedLists = lists.filter(el => el.id !== list.id).splice(newIndex, 0, list);
-    return { ...state, lists: updatedLists };
-}
-
 function addListItem(state, action) {
     const { list, item, onHidden } = action.payload;
     const { content, temp_id, item_order } = item;
@@ -238,40 +231,6 @@ function addListItem(state, action) {
 
     const updatedLists = lists.map(itemList => (itemList.id === list.id ? itemList.append(newListItem) : itemList));
     return { ...state, lists: updatedLists };
-}
-
-function moveToList(state, action) {
-    const { toList, item, fromList } = action.payload;
-    const { backlog, lists } = state;
-
-    // no-op
-    if (toList.id === fromList.id) {
-        return state;
-    }
-
-    const movingFromBacklog = backlog.items.map(el => el.id).contains(item.id);
-    const movingToBacklog = isListBacklog(toList);
-
-    let newBacklog = backlog;
-    if (movingFromBacklog && !movingToBacklog) {
-        newBacklog = backlog.removeItem(item);
-    }
-
-    if (!movingFromBacklog && movingToBacklog) {
-        newBacklog = backlog.prepend(item);
-    }
-
-    const updatedLists = lists.map(itemList => {
-        if (itemList.id === fromList.id) {
-            return itemList.removeItem(item);
-        }
-        if (itemList.id === toList.id) {
-            return itemList.append(item);
-        }
-        return itemList;
-    });
-
-    return { ...state, backlog: newBacklog, lists: updatedLists };
 }
 
 function updateListItem(state, action) {
@@ -363,7 +322,22 @@ function updateListId(state, old_id, new_id) {
 
 function updateListsFilter(state, action) {
     const { filteredLists } = action.payload;
-    return { ...state, filteredLists };
+
+    const listsRemoved = Set(filteredLists).subtract(Set(state.filteredLists)).toList();
+    let backlog = listsRemoved.reduce((backlog, list) => {
+        return list.get('items').reduce((acc, item) => acc.append(item), backlog)
+    }, state.backlog);
+
+    const listsAdded = Set(state.filteredLists).subtract(Set(filteredLists)).toList();
+    backlog = listsAdded.reduce((backlog, list) => {
+        return list.get('items').reduce((acc, item) => acc.removeItem(item), backlog)
+    }, backlog);
+
+    return {
+        ...state,
+        backlog,
+        filteredLists,
+    };
 }
 
 function updateProjectsFilter(state, action) {
@@ -433,26 +407,26 @@ function fetchSuccess(state, action) {
                             text: item.content,
                             project: projectIdMap[item.project_id],
                         }))
+
                 ),
             });
         })
     );
 
     // Create list filters
-    const filteredListIds = state.filteredLists.map(el => el.id);
-    const filteredLists = loadedLists.filter(el => filteredListIds.contains(el.id));
+    const filteredListIds = Set(state.filteredLists.map(el => el.id));
+    const filteredLists = loadedLists.filter(el => filteredListIds.has(el.id));
 
     // Create backlog.
     // Important Note: when a label is deleted Todoist doesn't remove that label from any tasks that had that label
     //                 but our Todoist client does filter those labels. So rather than just check if labels is empty
     //                 we need to filter our backlog items to items that don't have a label that exists.
-    const labelIds = Set(labelList.map(l => l.id));
     const backlogList = new List({
-        id: 0,
+        id: "0",
         title: 'Backlog',
         items: ImmutableList(
             items
-                .filter(item => Set.of(...item.labels).intersect(labelIds).size === 0)
+                .filter(item => item.labels.length === 0 || Set.of(...item.labels).intersect(filteredListIds).size > 0)
                 .filter(item => {
                     // FIXME: remove items without a valid project (seen in wild, unsure how it happens)
                     const project = projectIdMap[item.project_id];
@@ -511,13 +485,62 @@ function setSortBy(state, action) {
     }
 }
 
-function sortLists(state) {
-    const { lists, backlog } = state;
+function moveItem(state, action) {
+    const { itemId, fromListId, toListId, itemIndex } = action.payload;
 
+    const item = state.lists.push(state.backlog).find(l => l.id === fromListId).get('items').find(i => i.id === itemId);
+    const updatedLists = state.lists.map(l => {
+        let newList = l;
+
+        if (l.id === fromListId) {
+            newList = newList.removeItem(item);
+        }
+
+        // don't add an item to a list twice
+        if (l.id === toListId && !newList.get('items').some(i => i.id === item.id)) {
+            newList = newList.insert(itemIndex, item);
+        }
+
+        return newList;
+    });
+
+    let updatedBacklog = state.backlog;
+    if (isBacklogListId(fromListId)) {
+        updatedBacklog = updatedBacklog.removeItem(item);
+    }
+
+    if (isBacklogListId(toListId)) {
+        updatedBacklog = updatedBacklog.insert(itemIndex, item);
+    }
+
+    return { ...state, lists: updatedLists, backlog: updatedBacklog };
+}
+
+function updateListIndex(state, action) {
+    const { listId, newIndex } = action.payload;
+    const { lists } = state;
+    const list = lists.find(l => l.id === listId);
+    return {
+        ...state,
+        lists: lists.filter(el => el.id !== listId).insert(newIndex, list)
+    };
+}
+
+function sortLists(state, prevState) {
+    const { lists, backlog } = state;
     const sortByField = state.sortBy.get('field');
     const sortByDirection = state.sortBy.get('direction');
-    let sortFn = (a, b) => 0;
+    let sortFn = (a, b, list) => 0;
     switch (sortByField) {
+        case SORT_BY.USER_SET:
+            sortFn = (a, b, list) => {
+                let aIndex = list ? list.get('items').findIndex(i => i.id === a.id) : 1;
+                let bIndex = list ? list.get('items').findIndex(i => i.id === b.id) : 0;
+                aIndex = aIndex > -1 ? aIndex : list.get('items').size;
+                bIndex = bIndex > -1 ? bIndex : list.get('items').size;
+                return aIndex <= bIndex ? -1 : 1;
+            };
+            break;
         case SORT_BY.DATE_ADDED:
             sortFn = (a, b) => {
                 const aDateCreated = moment(a.date_added);
@@ -565,7 +588,14 @@ function sortLists(state) {
             console.warn(`unknown sortBy.field: ${sortByField}`);
     }
 
-    return { ...state, lists: lists.map(list => list.sort(sortFn)), backlog: backlog.sort(sortFn) };
+    return {
+        ...state,
+        lists: lists.map(list => {
+            const prevList = prevState.lists.find(l => l.id === list.id);
+            return list.sort((a,b) => sortFn(a, b, prevList));
+        }),
+        backlog: backlog.sort((a,b) => sortFn(a, b, backlog))
+    };
 }
 
 export const reducer = (state = initialState, action) => {
@@ -578,16 +608,12 @@ export const reducer = (state = initialState, action) => {
             return deleteList(state, action);
         case types.COMPLETE_LIST:
             return completeList(state, action);
-        case types.REORDER_LIST:
-            return reorderList(state, action);
         case types.ADD_LIST_ITEM:
-            return sortLists(addListItem(state, action));
-        case types.MOVE_TO_LIST:
-            return sortLists(moveToList(state, action));
+            return sortLists(addListItem(state, action), state);
         case types.UPDATE_LIST_ITEM:
             return updateListItem(state, action);
         case types.UPDATE_ID:
-            return sortLists(updateId(state, action));
+            return sortLists(updateId(state, action), state);
         case types.COMPLETE_LIST_ITEM:
             return completeListItem(state, action);
 
@@ -607,7 +633,7 @@ export const reducer = (state = initialState, action) => {
         case types.FETCH_REQUEST_SENT:
             return fetchRequest(state, action);
         case types.FETCH_SUCCESSFUL:
-            return sortLists(fetchSuccess(state, action));
+            return sortLists(fetchSuccess(state, action), state);
         case types.FETCH_FAILURE:
             return fetchFailure(state, action);
 
@@ -628,7 +654,13 @@ export const reducer = (state = initialState, action) => {
         case types.SET_DEFAULT_PROJECT:
             return setDefaultProject(state, action);
         case types.SET_SORT_BY:
-            return sortLists(setSortBy(state, action));
+            return sortLists(setSortBy(state, action), state);
+
+        case types.MOVE_ITEM:
+            return moveItem(state, action);
+
+        case types.UPDATE_LIST_INDEX:
+            return updateListIndex(state, action);
 
         default:
             return state;

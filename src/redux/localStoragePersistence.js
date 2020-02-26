@@ -9,7 +9,7 @@ export { save } from 'redux-localstorage-simple';
 
 // Constants
 const TRELLOIST_VERSION_NAMESPACE = 'TRELLOIST_VERSION';
-const VERSION = '8';
+const VERSION = '9';
 export const LOCAL_STORAGE_NAMESPACE = 'trelloist';
 
 // http://stackoverflow.com/a/901144/4988358

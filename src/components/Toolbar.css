@@ -1,0 +1,25 @@
+.Toolbar {
+    flex: 0;
+    background-color: #8A9BA8;
+    box-shadow: inset 0 0 3px #5C7080;
+}
+
+.Toolbar .inner {
+    padding: 10px 15px 10px 15px;
+    display: flex;
+    align-items: center;
+    height: 50px;
+}
+
+.Toolbar .Toolbar-item + .Toolbar-item {
+    margin-left: 5px;
+}
+
+.Toolbar .light-divider {
+    border-left: 1px solid RGBA(235, 241, 245, 0.50);
+}
+
+/* TODO: CSS bug that results in incorrect padding from DueDateFilter year and month selects */
+.bp3-html-select.bp3-minimal > select {
+    padding: 0 16px 0 5px !important;
+}
