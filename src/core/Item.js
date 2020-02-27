@@ -20,7 +20,7 @@ export default class Item extends ItemRecord {
             text: text || this.text,
             item_order: item_order || this.item_order,
             project: project || this.project,
-            due_date_utc: (due && due.date) || this.due_date_utc,
+            due_date_utc: due ? due.date : this.due_date_utc,
             recurring: (due && due.is_recurring) || this.recurring,
             priority: priority || this.priority,
             responsible_uid: responsible_uid || this.responsible_uid,
