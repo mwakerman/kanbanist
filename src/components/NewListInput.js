@@ -67,7 +67,7 @@ class NewListInput extends React.Component {
             <div className="NewListInput list-panel-item" id="new-list-input">
                 <Popover
                     usePortal={true}
-                    isOpen={isFocused}
+                    isOpen={isFocused && !isPremium}
                     content={
                         <Card>
                             Creating lists requires <a target="_blank" rel="noopener noreferrer" href="https://todoist.com/premium?ref=kanbanist">Todoist Premium</a>.
