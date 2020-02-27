@@ -9,7 +9,7 @@ import { defaultPriority } from '../../core/Priority';
 
 const moment = require('moment');
 
-const isBacklogListId = listId => listId === "0";
+export const isBacklogListId = listId => listId === "0";
 
 export const isListBacklog = list => isBacklogListId(list.id);
 
