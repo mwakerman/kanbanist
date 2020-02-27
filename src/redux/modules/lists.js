@@ -9,7 +9,7 @@ import { defaultPriority } from '../../core/Priority';
 
 const moment = require('moment');
 
-const isBacklogListId = listId => listId === "0";
+export const isBacklogListId = listId => listId === "0";
 
 export const isListBacklog = list => isBacklogListId(list.id);
 
@@ -488,7 +488,10 @@ function setSortBy(state, action) {
 function moveItem(state, action) {
     const { itemId, fromListId, toListId, itemIndex } = action.payload;
 
-    const item = state.lists.push(state.backlog).find(l => l.id === fromListId).get('items').find(i => i.id === itemId);
+    const item = state.lists.push(state.backlog)
+        .find(l => l.id === fromListId).get('items')
+        .find(i => i.id === itemId);
+
     const updatedLists = state.lists.map(l => {
         let newList = l;
 

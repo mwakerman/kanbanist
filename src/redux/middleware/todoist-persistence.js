@@ -1,5 +1,5 @@
 import Todoist from '../../todoist-client/Todoist';
-import { types, actions, isListBacklog } from '../modules/lists';
+import { types, actions, isListBacklog, isBacklogListId } from '../modules/lists';
 import List from '../../core/List';
 import Item from "../../core/Item";
 
@@ -130,7 +130,7 @@ const todoistPersistenceMiddleware = store => next => action => {
                 .filter(l => l.items.map(i => i.id).includes(itemId))
                 .map(l => l.id)
                 .concat(isListBacklog(toList) ? [] : [toListId])
-                .filter(listId => !isListBacklog(listId) && listId !== fromListId)
+                .filter(listId => !isBacklogListId(listId) && listId !== fromListId)
                 .toSet().toArray();
 
             const updatedItem = { id: item.id, labels };

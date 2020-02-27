@@ -3,6 +3,10 @@ The missing kanban board for [Todoist](https://todoist.com/).
 
 ![Kanbanist](src/pages/kanbanist.png?raw=true "Kanbanist")
 
+## Update 2020-02-27
+As of today, the Todoist API prevents users without [Todoist Premium](https://todoist.com/premium) from creating Labels.
+Kanbanist uses Labels as the lists so without labels, well, there's not a whole lot going on.
+
 ## Features
 
 - Create a dynamic kanban board for Todoist tasks.
