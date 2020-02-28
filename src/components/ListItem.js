@@ -1,12 +1,16 @@
 import React from 'react';
-import { EditableText, Checkbox, Icon } from '@blueprintjs/core';
+import { EditableText, Checkbox, Icon, Popover, Position } from '@blueprintjs/core';
+import { DatePicker } from "@blueprintjs/datetime";
 import '@blueprintjs/core/lib/css/blueprint.css';
+import '@blueprintjs/datetime/lib/css/blueprint-datetime.css';
 import { markdown } from 'markdown';
 import $ from 'jquery';
 import ListItemDueDate from './ListItemDueDate';
 import Todoist from '../todoist-client/Todoist';
 import { Draggable } from "react-beautiful-dnd";
 import classNames from  "classnames";
+import moment from 'moment';
+
 
 const outlookRegex = /\[\[\s*outlook=id3=(.*?),([^\]]*)\]\]/;
 const isOutlookText = rawText => {
@@ -103,13 +107,21 @@ class ListItem extends React.Component {
         // need to be changed if we allow for changing other properties of
         // a task (like the project) in the future.
         if (item.text !== rawText) {
-            onUpdate(item, rawText);
+            onUpdate(item, { text: rawText });
         }
         this.setState({
             previousRawText: rawText,
             isEditing: false,
             formattedText: this.format(rawText),
         });
+    };
+
+    setDueDate = (dueDate) => {
+        const { item, onUpdate } = this.props;
+        const due = {
+            date: dueDate ? moment(dueDate).format('YYYY-MM-DD') : null,
+        };
+        onUpdate(item, { due });
     };
 
     /**
@@ -182,10 +194,34 @@ class ListItem extends React.Component {
                             </div>
                             <div className="ListItem-inner-bottom">
                                 <div className="non-edit-text">
-                                    <span className="ListItem-project-name">{item.project.name}</span>
-                                    <a href={`https://todoist.com/showTask?id=${item.id}`} className="task-link-wrapper">
-                                        <Icon className="ListItem-task-link" icon="link" iconSize={10} />
-                                    </a>
+                                    <div className="left-align">
+                                        <span className="ListItem-project-name">{item.project.name}</span>
+                                        <a href={`https://todoist.com/showTask?id=${item.id}`} className="task-link-wrapper">
+                                            <Icon className="ListItem-task-icon" icon="link" iconSize={10} />
+                                        </a>
+                                        <Popover
+                                            minimal={true}
+                                            position={Position.BOTTOM}
+                                            content={
+                                                <DatePicker
+                                                    clearButtonText={"No Date"}
+                                                    highlightCurrentDay={true}
+                                                    value={item.due_date_utc ? new Date(item.due_date_utc) : undefined}
+                                                    onChange={(date, isUserChange) => isUserChange && this.setDueDate(date)}
+                                                    showActionsBar={true}
+                                                    minDate={moment().subtract(10, 'years').toDate()}
+                                                    maxDate={moment().add(10, 'years').toDate()}
+                                                />
+                                            }
+                                            target={
+                                                <Icon
+                                                    className="task-link-wrapper ListItem-task-icon"
+                                                    icon="calendar"
+                                                    iconSize={10}
+                                                />
+                                            }
+                                        />
+                                    </div>
                                     {isOutlook ? (
                                         <Icon className="ListItem-recurring-icon" icon="envelope" iconSize={12} />
                                     ) : null}

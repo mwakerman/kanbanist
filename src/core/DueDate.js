@@ -15,7 +15,7 @@ export default class DueDate extends DueDateRecord {
     }
 
     isExpired() {
-        return this.due_moment.isBefore(moment());
+        return this.due_moment.isBefore(moment().startOf('day'));
     }
 
     format() {
