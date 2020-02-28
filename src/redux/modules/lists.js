@@ -270,7 +270,7 @@ function updateId(state, action) {
         case Item:
             return updateItemId(state, old_id, new_id);
         case List:
-            return updateListId(state, old_id, new_id);
+            return updateListId(state, old_id, `${new_id}`);
         default:
             console.error('Updating id for unknown type: ', type);
             return state;
