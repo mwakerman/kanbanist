@@ -236,7 +236,8 @@ function addListItem(state, action) {
 function updateListItem(state, action) {
     const { item, fields } = action.payload;
     const updatedLists = state.lists.map(itemList => itemList.updateItem(item, item.updateWith(fields)));
-    return { ...state, lists: updatedLists };
+    const updatedBacklog = state.backlog.updateItem(item, item.updateWith(fields));
+    return { ...state, lists: updatedLists, backlog: updatedBacklog };
 }
 
 function completeListItem(state, action) {
