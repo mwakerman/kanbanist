@@ -4,7 +4,7 @@
   "devDependencies": {
     "cross-env": "5.2.0",
     "node-sass": "^4.13.1",
-    "react-scripts": "3.4.0",
+    "react-scripts": "3.4.1",
     "sass": "^1.25.0",
     "typescript": "^3.8.2"
   },
