@@ -27,7 +27,7 @@ function getParameterByName(name) {
 // Deserializes the initial state from localStorage.
 export function load() {
     const loadedState = {};
-    if (localStorage[LOCAL_STORAGE_NAMESPACE]) {
+    if (localStorage[LOCAL_STORAGE_NAMESPACE] ) {
         const jsState = JSON.parse(localStorage[LOCAL_STORAGE_NAMESPACE]);
 
         // Versioning - by bumping the version number I can force a clean load when someone visits the site.
@@ -42,6 +42,8 @@ export function load() {
 
         // User
         loadedState.user = jsState.user;
+
+        return loadedState; // TODO: remove post dev
 
         // Lists
         loadedState.lists = {};
