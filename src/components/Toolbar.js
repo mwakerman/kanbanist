@@ -4,7 +4,7 @@ import { Button, AnchorButton, Classes, Intent, MenuItem, Popover } from '@bluep
 import { Select } from '@blueprintjs/select';
 import '@blueprintjs/select/lib/css/blueprint-select.css';
 import { PopoverPosition } from "@blueprintjs/core/lib/cjs/components/popover/popoverSharedProps";
-import { actions as listsActions, SORT_BY, SORT_BY_DIRECTION } from '../redux/modules/lists';
+import { actions as listsActions, LIST_TODOIST_TYPES, SORT_BY, SORT_BY_DIRECTION } from '../redux/modules/lists';
 import FilterMenu from './FilterMenu';
 import DueDateFilterMenu from './DueDateFilterMenu';
 import { priorities } from '../core/Priority';
@@ -15,6 +15,7 @@ import './Toolbar.css';
 class Toolbar extends Component {
     render() {
         const {
+            currentListType,
             lists,
             filteredLists,
             updateListsFilter,
@@ -30,11 +31,35 @@ class Toolbar extends Component {
             updatePriorityFilter,
             sortBy,
             setSortBy,
+            setListType,
         } = this.props;
 
         return (
             <div className="Toolbar">
                 <div className="inner">
+                    <Select
+                        className="Toolbar-item"
+                        items={Object.values(LIST_TODOIST_TYPES)}
+                        itemRenderer={(listType, { handleClick, modifiers }) => {
+                            if (!modifiers.matchesPredicate) {
+                                return null;
+                            }
+                            return (
+                                <MenuItem
+                                    active={listType === currentListType}
+                                    disabled={modifiers.disabled}
+                                    key={listType}
+                                    onClick={handleClick}
+                                    text={listType}
+                                />
+                            );
+                        }}
+                        onItemSelect={listType => setListType(listType)}
+                        filterable={false}
+                    >
+                        <Button text="List Type" icon="segmented-control" rightIcon="double-caret-vertical" />
+                    </Select>
+                    <span className="light-divider bp3-navbar-divider" />
                     <Popover position={PopoverPosition.BOTTOM_RIGHT} className="Toolbar-item">
                         <AnchorButton text="Lists" icon="property"/>
                         <FilterMenu
@@ -177,6 +202,7 @@ const mapStateToProps = state => ({
     defaultProjectId: state.lists.defaultProjectId,
     showIfResponsible: state.lists.showIfResponsible,
     sortBy: state.lists.sortBy,
+    currentListType: state.lists.listType,
 });
 
 const mapDispatchToProps = {
@@ -184,6 +210,7 @@ const mapDispatchToProps = {
     updatePriorityFilter: listsActions.updatePriorityFilter,
     toggleAssigneeFilter: listsActions.toggleAssigneeFilter,
     setSortBy: listsActions.setSortBy,
+    setListType: listsActions.setListType,
 };
 
 export default connect(

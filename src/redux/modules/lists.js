@@ -17,6 +17,11 @@ export const isInboxProject = project => {
     return project.name === 'Inbox';
 };
 
+export const LIST_TODOIST_TYPES = {
+    LABELS: 'Labels',
+    PROJECTS: 'Projects',
+};
+
 export const SORT_BY = {
     USER_SET: 'Board',
     DATE_ADDED: 'Date Added',
@@ -43,6 +48,7 @@ export const NAMED_FILTERS = {
 };
 
 const initialState = {
+    listType: LIST_TODOIST_TYPES.LABELS,
     lists: ImmutableList.of(),
     filteredLists: ImmutableList.of(),
     backlog: new List({ id: 0, title: 'Backlog' }),
@@ -82,6 +88,7 @@ export const types = {
     CLEAR_FILTERS: 'CLEAR_FILTERS',
     SET_DEFAULT_PROJECT: 'SET_DEFAULT_PROJECT',
     SET_SORT_BY: 'SET_SORT_BY',
+    SET_LIST_TYPE: 'SET_LIST_TYPE',
 
     // TODO: changing item dragging API with new action
     MOVE_ITEM: 'MOVE_ITEM',
@@ -133,6 +140,7 @@ export const actions = {
     clearFilters: () => ({ type: types.CLEAR_FILTERS }),
     setDefaultProject: projectId => ({ type: types.SET_DEFAULT_PROJECT, payload: { projectId } }),
     setSortBy: (field, direction) => ({ type: types.SET_SORT_BY, payload: { field, direction } }),
+    setListType: (listType) => ({ type: types.SET_LIST_TYPE, payload: { listType } }),
     moveItem: (itemId, fromListId, toListId, itemIndex) => ({
         type: types.MOVE_ITEM,
         payload: { itemId, fromListId, toListId, itemIndex }
@@ -486,6 +494,11 @@ function setSortBy(state, action) {
     }
 }
 
+function setListType(state, action) {
+    const { listType } = action.payload;
+    return { ...state, listType };
+}
+
 function moveItem(state, action) {
     const { itemId, fromListId, toListId, itemIndex } = action.payload;
 
@@ -659,6 +672,8 @@ export const reducer = (state = initialState, action) => {
             return setDefaultProject(state, action);
         case types.SET_SORT_BY:
             return sortLists(setSortBy(state, action), state);
+        case types.SET_LIST_TYPE:
+            return setListType(state, action);
 
         case types.MOVE_ITEM:
             return moveItem(state, action);
