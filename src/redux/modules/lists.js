@@ -119,9 +119,9 @@ export const actions = {
             });
     },
     fetchRequest: () => ({ type: types.FETCH_REQUEST_SENT }),
-    fetchSuccess: (labelList, items, projects, collaborators) => ({
+    fetchSuccess: (labels, items, projects, collaborators) => ({
         type: types.FETCH_SUCCESSFUL,
-        payload: { labelList, items, projects, collaborators },
+        payload: { labels, items, projects, collaborators },
     }),
     fetchFailure: error => ({ type: types.FETCH_FAILURE, payload: { error } }),
     clearAll: () => ({ type: types.CLEAR_ALL }),
@@ -140,7 +140,10 @@ export const actions = {
     clearFilters: () => ({ type: types.CLEAR_FILTERS }),
     setDefaultProject: projectId => ({ type: types.SET_DEFAULT_PROJECT, payload: { projectId } }),
     setSortBy: (field, direction) => ({ type: types.SET_SORT_BY, payload: { field, direction } }),
-    setListType: (listType) => ({ type: types.SET_LIST_TYPE, payload: { listType } }),
+    setListType: (listType) => (dispatch, getState) => {
+        dispatch({ type: types.SET_LIST_TYPE, payload: { listType } });
+        dispatch(actions.fetchLists());
+    },
     moveItem: (itemId, fromListId, toListId, itemIndex) => ({
         type: types.MOVE_ITEM,
         payload: { itemId, fromListId, toListId, itemIndex }
@@ -383,91 +386,74 @@ function fetchRequest(state, action) {
 }
 
 function fetchSuccess(state, action) {
-    const { labelList, items, projects, collaborators } = action.payload;
+    const { listType } = state;
+    const { labels, projects, collaborators } = action.payload;
 
-    const projectIdMap = projects.reduce((mapping, project) => {
-        mapping[project.id] = new Project(project);
-        return mapping;
-    }, {});
+    const projectIdMap = projects.reduce((acc, project) => Object.assign(acc, {[project.id]: new Project(project)}), {});
+    const labelIdMap = labels.reduce((acc, label) => Object.assign(acc, {[label.id]: label}), {});
 
-    // Create Lists.
-    const loadedLists = ImmutableList(
-        labelList.map(label => {
-            return new List({
-                id: label.id,
-                title: label.name,
-                items: ImmutableList(
-                    items
-                        .filter(item => item.labels.indexOf(label.id) >= 0)
-                        .filter(item => {
-                            // FIXME: remove items without a valid project (seen in wild, unsure how it happens)
-                            const project = projectIdMap[item.project_id];
-                            if (!project) {
-                                console.warn('item is missing valid project, skipping...');
-                                console.warn(JSON.stringify({ projects, item }, null, 2));
-                            }
-                            return !!project;
-                        })
-                        .filter(item => !item.checked)
-                        .map(item => new Item({
-                            ...item,
-                            due_date_utc: item.due && item.due.date,
-                            recurring: item.due && item.due.is_recurring,
-                            text: item.content,
-                            project: projectIdMap[item.project_id],
-                        }))
+    // sanitise items returned from Todoist...
+    const items = action.payload.items
+        // remove checked items (sub-tasks)
+        .filter(item => !item.checked)
+        // remove items without a valid project (seen in wild, unsure how it happens perhaps it's the legacy_project_id)
+        .filter(i => !!projectIdMap[i.project_id])
+        // remove deleted labels from item.labels (labels not removed from tasks when deleted in Todoist)
+        .map(i => ({ ...i, labels: i.labels.filter(labelId => !!labelIdMap[labelId]) }));
 
-                ),
-            });
-        })
+
+    // group items depending on list type
+    const groupedItems = items.reduce((acc, item) => {
+        const groupIds = listType === LIST_TODOIST_TYPES.LABELS ? item.labels : [item.project_id];
+
+        const itemRecord = new Item({
+            ...item,
+            due_date_utc: item.due && item.due.date,
+            recurring: item.due && item.due.is_recurring,
+            text: item.content,
+            project: projectIdMap[item.project_id],
+        });
+
+        if (!groupIds.length) {
+            acc[null].push(itemRecord);
+        } else {
+            for (const groupId of groupIds) {
+                if (!acc.hasOwnProperty(groupId)) {
+                    acc[groupId] = [];
+                }
+                acc[groupId].push(itemRecord);
+            }
+        }
+
+        return acc;
+    }, { null: [] });
+
+    const lists = ImmutableList(
+        (listType === LIST_TODOIST_TYPES.LABELS ? labels : projects)
+            .map(list => new List({
+                id: list.id,
+                title: list.name || list.title, // TODO: smell
+                items: ImmutableList(groupedItems[list.id]),
+            }))
     );
 
     // Create list filters
     const filteredListIds = Set(state.filteredLists.map(el => el.id));
-    const filteredLists = loadedLists.filter(el => filteredListIds.has(el.id));
-
-    // Create backlog.
-    // Important Note: when a label is deleted Todoist doesn't remove that label from any tasks that had that label
-    //                 but our Todoist client does filter those labels. So rather than just check if labels is empty
-    //                 we need to filter our backlog items to items that don't have a label that exists.
-    const backlogList = new List({
-        id: "0",
-        title: 'Backlog',
-        items: ImmutableList(
-            items
-                .filter(item => item.labels.length === 0 || Set.of(...item.labels).intersect(filteredListIds).size > 0)
-                .filter(item => {
-                    // FIXME: remove items without a valid project (seen in wild, unsure how it happens)
-                    const project = projectIdMap[item.project_id];
-                    if (!project) {
-                        console.warn('item in backlog is missing valid project, skipping...');
-                        console.warn(JSON.stringify({ projects, item }, null, 2));
-                    }
-                    return !!project;
-                })
-                .filter(item => !item.checked)
-                .map(item => new Item({
-                    ...item,
-                    due_date_utc: item.due && item.due.date,
-                    recurring: item.due && item.due.is_recurring,
-                    text: item.content,
-                    project: projectIdMap[item.project_id],
-                }))
-        ),
-    });
+    const filteredLists = lists.filter(el => filteredListIds.has(el.id));
+    const backlog = new List({ id: '0', title: 'Backlog', items: ImmutableList(groupedItems[null]) });
 
     // Create projects and filtered projects
     const loadedProjects = ImmutableList(Object.keys(projectIdMap).map(pid => projectIdMap[pid]));
     const filteredProjectsIds = state.filteredProjects.map(el => el.id);
     const filteredProjects = loadedProjects.filter(el => filteredProjectsIds.contains(el.id));
-
+    debugger;
     return {
         ...state,
         projects: loadedProjects,
         filteredProjects,
-        lists: loadedLists,
+        lists,
         filteredLists,
-        backlog: backlogList,
+        backlog,
         fetching: false,
         fetchFail: null,
         collaborators,
