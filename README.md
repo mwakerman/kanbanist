@@ -37,7 +37,7 @@ Kanbanist uses Labels as the lists so without labels, well, there's not a whole 
 
 Kanbanist is a static (serverless) website built using [`create-react-app`](https://github.com/facebook/create-react-app) and dependencies are managed using [`yarn`](https://yarnpkg.com/en/)
 
-To get started `git checkout` the repository and then run `yarn` (to install dependencies) and `yarn start` to start the development server.
+To get started `git clone` the repository and then run `yarn` (to install dependencies) and `yarn start` to start the development server.
 
 ## Contributing
 
