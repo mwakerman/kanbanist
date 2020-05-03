@@ -279,33 +279,33 @@ p {
 }
 
 .ListItem .priority-4 .bp3-control-indicator {
-  border-color: RGB(170, 5, 15);
-  background: RGBA(170, 5, 15, 0.5) none;
+  border-color: RGB(255, 112, 102);
+  background: RGBA(255, 112, 102, 0.5) none;
 }
 
 .ListItem .priority-3 .bp3-control-indicator {
-  border-color: RGB(246, 128, 46);
-  background: RGBA(246, 128, 46, 0.5) none;
+  border-color: RGB(255, 154, 20);
+  background: RGBA(255, 154, 20, 0.5) none;
 }
 
 .ListItem .priority-2 .bp3-control-indicator {
-  border-color: RGB(251, 192, 63);
-  background: RGBA(251, 192, 63, 0.5) none;
+  border-color: RGB(82, 151, 255);
+  background: RGBA(82, 151, 255, 0.5) none;
 }
 
 .ListItem .priority-4 .bp3-control-indicator:hover {
-  border-color: RGB(170, 5, 15);
-  background: RGBA(170, 5, 15, 0.7) none;
+  border-color: RGB(255, 112, 102);
+  background: RGBA(255, 112, 102, 0.7) none;
 }
 
 .ListItem .priority-3 .bp3-control-indicator:hover {
-  border-color: RGB(246, 128, 46);
-  background: RGBA(246, 128, 46, 0.7) none;
+  border-color: RGB(255, 154, 20);
+  background: RGBA(255, 154, 20, 0.7) none;
 }
 
 .ListItem .priority-2 .bp3-control-indicator:hover {
-  border-color: RGB(251, 192, 63);
-  background: RGBA(251, 192, 63, 0.7) none;
+  border-color: RGB(82, 151, 255);
+  background: RGBA(82, 151, 255, 0.7) none;
 }
 
 
