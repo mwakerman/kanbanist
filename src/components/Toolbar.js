@@ -86,7 +86,7 @@ class Toolbar extends Component {
                         />
                     </Popover>
                     <Popover className="Toolbar-item">
-                        <AnchorButton text="Due Date" icon="calendar"/>
+                        <AnchorButton text="Due" icon="calendar"/>
                         <DueDateFilterMenu />
                     </Popover>
                     <Button
