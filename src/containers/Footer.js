@@ -12,9 +12,11 @@ export default class Footer extends React.Component {
                             <button className="bp3-button bp3-minimal bp3-icon-code" />
                         </a>
                         <span className="bp3-navbar-divider hide-if-small-750" />
-                        <a href="https://www.buymeacoffee.com/RUZ5hab" target="_blank" rel="noopener noreferrer">
-                            <button className="bp3-button bp3-minimal bp3-icon-bank-account" />
-                        </a>
+                        <Tooltip content={"Support Kanbanist"} on="hover" position={Position.RIGHT}>
+                            <a href="https://www.buymeacoffee.com/RUZ5hab" target="_blank" rel="noopener noreferrer">
+                                <button className="bp3-button bp3-minimal bp3-icon-dollar" />
+                            </a>
+                        </Tooltip>
                     </div>
                     <div className="bp3-navbar-group bp3-align-right">
                         <Link to="/issues" className="hide-if-small-750">
