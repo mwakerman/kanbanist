@@ -2,6 +2,7 @@
     flex: 0;
     background-color: #8A9BA8;
     box-shadow: inset 0 0 3px #5C7080;
+    width: 100%;
 }
 
 .Toolbar .inner {
@@ -9,6 +10,13 @@
     display: flex;
     align-items: center;
     height: 50px;
+    min-width: fit-content;
+    overflow-x: auto;
+    overflow-y: hidden;
+}
+
+.Toolbar .Toolbar-item {
+    flex-shrink: 0;
 }
 
 .Toolbar .Toolbar-item + .Toolbar-item {

@@ -46,6 +46,7 @@ class Board extends Component {
             actions,
             containerWidth,
             showIfResponsible,
+            showSubtasks,
             user,
             fetchFail,
             fetching,
@@ -200,6 +201,11 @@ class Board extends Component {
                 return moment(item.due_date_utc).isBefore(filterEndMoment.clone().add(10, 'minutes'));
             }
 
+            // subtasks filter
+            if (!showSubtasks && item.parent_id !== null) {
+                return false;
+            }
+
             return true;
         };
 
@@ -236,6 +242,7 @@ const mapStateToProps = state => {
         filterDueDate: state.lists.filterDueDate,
         namedFilter: state.lists.namedFilter,
         showIfResponsible: state.lists.showIfResponsible,
+        showSubtasks: state.lists.showSubtasks,
         user: state.user.user,
         fetchFail: state.lists.fetchFail,
         fetching: state.lists.fetching,

@@ -52,6 +52,7 @@ const initialState = {
     filterDueDate: Map({ startDate: null, endDate: null }),
     filteredPriorities: ImmutableList.of(),
     showIfResponsible: false,
+    showSubtasks: true,
     namedFilter: null,
     fetching: false,
     fetchFail: null,
@@ -78,6 +79,7 @@ export const types = {
     UPDATE_DUE_DATE_FILTER: 'UPDATE_DUE_DATE_FILTER',
     UPDATE_PRIORITY_FILTER: 'UPDATE_PRIORITY_FILTER',
     TOGGLE_ASSIGNEE_FILTER: 'TOGGLE_ASSIGNEE_FILTER',
+    TOGGLE_SUBTASK_FILTER: 'TOGGLE_SUBTASK_FILTER',
     SET_NAMED_FILTER: 'SET_NAMED_FILTER',
     CLEAR_FILTERS: 'CLEAR_FILTERS',
     SET_DEFAULT_PROJECT: 'SET_DEFAULT_PROJECT',
@@ -129,6 +131,7 @@ export const actions = {
         payload: { filteredPriorities },
     }),
     toggleAssigneeFilter: () => ({ type: types.TOGGLE_ASSIGNEE_FILTER }),
+    toggleSubtaskFilter: () => ({ type: types.TOGGLE_SUBTASK_FILTER }),
     setNamedFilter: namedFilter => ({ type: types.SET_NAMED_FILTER, payload: { namedFilter } }),
     clearFilters: () => ({ type: types.CLEAR_FILTERS }),
     setDefaultProject: projectId => ({ type: types.SET_DEFAULT_PROJECT, payload: { projectId } }),
@@ -358,6 +361,10 @@ function updateDueDateFilter(state, action) {
 
 function toggleAssigneeFilter(state, action) {
     return { ...state, showIfResponsible: !state.showIfResponsible };
+}
+
+function toggleSubtaskFilter(state, action) {
+    return { ...state, showSubtasks: !state.showSubtasks };
 }
 
 function setNamedFilter(state, action) {
@@ -631,6 +638,8 @@ export const reducer = (state = initialState, action) => {
             return updatePriorityFilter(state, action);
         case types.TOGGLE_ASSIGNEE_FILTER:
             return toggleAssigneeFilter(state, action);
+        case types.TOGGLE_SUBTASK_FILTER:
+            return toggleSubtaskFilter(state, action);
         case types.SET_NAMED_FILTER:
             return setNamedFilter(state, action);
 
@@ -649,6 +658,7 @@ export const reducer = (state = initialState, action) => {
                 filterDueDate: initialState.filterDueDate,
                 filteredPriorities: initialState.filteredPriorities,
                 showIfResponsible: false,
+                showSubtasks: true,
                 namedFilter: null,
             };
 

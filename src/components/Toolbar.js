@@ -23,6 +23,8 @@ class Toolbar extends Component {
             updateProjectsFilter,
             showIfResponsible,
             toggleAssigneeFilter,
+            showSubtasks,
+            toggleSubtaskFilter,
             onClearFilters,
             defaultProjectId,
             setDefaultProject,
@@ -84,7 +86,7 @@ class Toolbar extends Component {
                         />
                     </Popover>
                     <Popover className="Toolbar-item">
-                        <AnchorButton text="Due Date" icon="calendar"/>
+                        <AnchorButton text="Due" icon="calendar"/>
                         <DueDateFilterMenu />
                     </Popover>
                     <Button
@@ -93,6 +95,13 @@ class Toolbar extends Component {
                         icon="user"
                         active={showIfResponsible}
                         onClick={toggleAssigneeFilter}
+                    />
+                    <Button
+                        className="Toolbar-item"
+                        text={`${ showSubtasks ? "Hide" : "Show" } Sub-tasks`}
+                        icon="list-detail-view"
+                        active={!showSubtasks}
+                        onClick={toggleSubtaskFilter}
                     />
                     <Button
                         className="Toolbar-item"
@@ -176,6 +185,7 @@ const mapStateToProps = state => ({
     filteredPriorities: state.lists.filteredPriorities,
     defaultProjectId: state.lists.defaultProjectId,
     showIfResponsible: state.lists.showIfResponsible,
+    showSubtasks: state.lists.showSubtasks,
     sortBy: state.lists.sortBy,
 });
 
@@ -183,6 +193,7 @@ const mapDispatchToProps = {
     setDefaultProject: listsActions.setDefaultProject,
     updatePriorityFilter: listsActions.updatePriorityFilter,
     toggleAssigneeFilter: listsActions.toggleAssigneeFilter,
+    toggleSubtaskFilter: listsActions.toggleSubtaskFilter,
     setSortBy: listsActions.setSortBy,
 };
 
