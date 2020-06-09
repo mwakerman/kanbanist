@@ -11,8 +11,8 @@
     align-items: center;
     height: 50px;
     min-width: fit-content;
-    overflow-x: auto;
-    overflow-y: hidden;
+    /*overflow-x: scroll;*/
+    /*overflow-y: hidden;*/
 }
 
 .Toolbar .Toolbar-item {
