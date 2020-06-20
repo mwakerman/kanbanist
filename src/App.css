@@ -161,6 +161,7 @@ p {
   max-height: 100%;
   display: flex;
   flex-direction: column;
+  background-color: #BFCCD6;
 }
 
 .list-panel-item {
@@ -243,7 +244,7 @@ p {
 }
 
 .DraggableList {
-  background-color: #BFCCD6;
+
 }
 
 .DraggableList:hover {
@@ -252,6 +253,10 @@ p {
 
 .BacklogList {
   background-color: #8A9BA8;
+}
+
+.SharedList {
+  background-color: #a0abb3;
 }
 
 .ListItem {

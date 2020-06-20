@@ -5,14 +5,14 @@ export default class ListTitle extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            title: props.title,
+            title: props.list.title,
             isEditing: false,
         };
     }
 
     componentDidUpdate(prevProps, prevState) {
-        if (this.props.title !== prevProps.title) {
-            this.setState({ title: this.props.title });
+        if (this.props.list.title !== prevProps.list.title) {
+            this.setState({ title: this.props.list.title });
         }
     }
 
@@ -22,13 +22,13 @@ export default class ListTitle extends React.Component {
         if (title.length > 0) {
             this.setState({ isEditing: false }, () => onRename(title));
         } else {
-            this.setState({ title: this.props.title });
+            this.setState({ title: this.props.list.title });
         }
     };
 
     render() {
         const { disabled, showListMenu, onDelete, onCompleteAll } = this.props;
-        const { isEditing } = this.state;
+        const { isEditing, title } = this.state;
 
         const listMenu = (
             <Menu>
@@ -49,7 +49,7 @@ export default class ListTitle extends React.Component {
                     <EditableText
                         isEditing={isEditing}
                         className="list-panel-title-text"
-                        value={this.state.title}
+                        value={title}
                         disabled={disabled}
                         onChange={newValue => this.setState({ title: newValue })}
                         onConfirm={this.handleRename}
