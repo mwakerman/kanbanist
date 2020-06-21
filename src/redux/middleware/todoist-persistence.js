@@ -1,5 +1,5 @@
 import Todoist from '../../todoist-client/Todoist';
-import { types, actions, isListBacklog, isBacklogListId } from '../modules/lists';
+import { types, actions, isListBacklog } from '../modules/lists';
 import List from '../../core/List';
 import Item from "../../core/Item";
 
@@ -16,7 +16,7 @@ const todoistPersistenceMiddleware = store => next => action => {
                 const { list, item } = action.payload;
                 const { content, temp_id } = item;
 
-                const labelString = isListBacklog(list) ? '' : `@${list.title.replaceAll(' ', '_').toLowerCase()}`;
+                const labelString = isListBacklog(list) ? '' : `@${list.value}`;
                 const hasProjectSyntax = content.indexOf('#') >= 0;
                 const projectString =
                     hasProjectSyntax || !defaultProject ? '' : `#${defaultProject.name.replaceAll(' ', '')}`;
@@ -116,7 +116,9 @@ const todoistPersistenceMiddleware = store => next => action => {
                     titleAlreadyUsed = state.lists.lists.map(list => list.title).contains(title);
                 }
 
-                if (!isListBacklog(list)) {
+                if (list.isShared) {
+                    Todoist.updateSharedLabelName(token, list.value, title);
+                } else if (!isListBacklog(list)) {
                     Todoist.updateLabelName(token, list.id, title);
                 }
             }
@@ -135,13 +137,11 @@ const todoistPersistenceMiddleware = store => next => action => {
             const item = fromList.get('items').find(i => i.id === itemId);
 
             // get all labels for item
-            const labels = state.lists.lists
-                .filter(l => l.items.map(i => i.id).includes(itemId))
-                .map(l => l.id)
-                .concat(isListBacklog(toList) ? [] : [toListId])
-                .filter(listId => !isBacklogListId(listId) && listId !== fromListId)
-                .toSet().toArray();
+            const currentLabels = state.lists.lists.filter(l => l.items.map(i => i.id).includes(itemId)).map(l => l.value);
+            const labelsToAdd = isListBacklog(toList) ? [] : [toList.value];
+            const labelsToRemove = isListBacklog(fromList) ? [] : [fromList.value];
 
+            const labels = currentLabels.toSet().union(labelsToAdd).subtract(labelsToRemove).toArray();
             const updatedItem = { id: item.id, labels };
             Todoist.updateItem(token, updatedItem);
             break;
@@ -150,10 +150,12 @@ const todoistPersistenceMiddleware = store => next => action => {
             const { listId, newIndex } = action.payload;
             const { lists } = state.lists;
 
+            const numSharedLists = lists.filter(el => el.isShared).size;
             const list = lists.find(l => l.id === listId);
             const labelOrderMap = lists
+                .filter(el => !el.isShared)
                 .filter(el => el.id !== listId)
-                .insert(newIndex, list)
+                .insert(newIndex - numSharedLists, list)
                 .map(l => l.id)
                 .reduce((acc, lid, idx) => Object.assign(acc, { [lid]: idx }), {});
 

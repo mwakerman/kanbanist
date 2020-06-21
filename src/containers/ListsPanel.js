@@ -86,6 +86,16 @@ class ListsPanel extends React.Component {
                                                 showListMenu={false}
                                             />
                                         );
+                                    } else if (list.isShared) {
+                                        return (
+                                            <List
+                                                key={list.id}
+                                                list={list}
+                                                className="SharedList List"
+                                                canEditTitle={true}
+                                                showListMenu={true}
+                                            />
+                                        );
                                     } else {
                                         return (
                                             <DraggableList

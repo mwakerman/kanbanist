@@ -104,8 +104,8 @@ export const actions = {
         dispatch(actions.fetchRequest());
         Todoist.fetch(state.user.user.token)
             .then(response => {
-                const { labels, items, projects, collaborators } = response;
-                dispatch(actions.fetchSuccess(labels, items, projects, collaborators));
+                const { labels, sharedLabels, items, projects, collaborators } = response;
+                dispatch(actions.fetchSuccess(labels, sharedLabels, items, projects, collaborators));
             })
             .catch(err => {
                 Raven.captureException(err);
@@ -114,9 +114,9 @@ export const actions = {
             });
     },
     fetchRequest: () => ({ type: types.FETCH_REQUEST_SENT }),
-    fetchSuccess: (labelList, items, projects, collaborators) => ({
+    fetchSuccess: (labelList, sharedLabels, items, projects, collaborators) => ({
         type: types.FETCH_SUCCESSFUL,
-        payload: { labelList, items, projects, collaborators },
+        payload: { labelList, sharedLabels, items, projects, collaborators },
     }),
     fetchFailure: error => ({ type: types.FETCH_FAILURE, payload: { error } }),
     clearAll: () => ({ type: types.CLEAR_ALL }),
@@ -173,10 +173,18 @@ function renameList(state, action) {
         titleAlreadyUsed = state.lists.map(list => list.title).contains(title);
     }
 
+    // note: even though we are changing the title of a list we are NOT changing the "value" as that does not change
+    //       on each item outside of a move or re-fetch (in which case all items will also be updated)
     const updatedLists = state.lists.map(itemList => {
         if (itemList.id === list.id) {
-            const { id, items } = itemList;
-            return new List({ id, items, title });
+            const { id, items, isShared } = itemList;
+            if (isShared) {
+                // for shared labels, id = value so we have to update the id too to avoid treating the next fetch like
+                // a new list (and losing our ordering)
+                return new List({ id: title.replaceAll(' ', '_'), items, title, isShared })
+            } else {
+                return new List({ id, items, title });
+            }
         } else {
             return itemList;
         }
@@ -382,7 +390,7 @@ function fetchRequest(state, action) {
 }
 
 function fetchSuccess(state, action) {
-    const { labelList, items, projects, collaborators } = action.payload;
+    const { labelList, sharedLabels, items, projects, collaborators } = action.payload;
 
     const projectIdMap = projects.reduce((mapping, project) => {
         mapping[project.id] = new Project(project);
@@ -391,13 +399,15 @@ function fetchSuccess(state, action) {
 
     // Create Lists.
     const loadedLists = ImmutableList(
-        labelList.map(label => {
+        sharedLabels.concat(labelList).map(label => {
             return new List({
                 id: label.id,
                 title: label.name,
+                isShared: label.is_shared,
+                value: label.value,
                 items: ImmutableList(
                     items
-                        .filter(item => item.labels.indexOf(label.id) >= 0)
+                        .filter(item => item.labels.includes(label.value))
                         .filter(item => {
                             // FIXME: remove items without a valid project (seen in wild, unsure how it happens)
                             const project = projectIdMap[item.project_id];

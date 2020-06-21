@@ -5,7 +5,7 @@ import URLSearchParams from 'url-search-params';
  * A (partial) todoist client for javascript.
  */
 
-const SYNC_API_URL = 'https://api.todoist.com/sync/v8/sync';
+const SYNC_API_URL = 'https://api.todoist.com/sync/v8.6/sync';
 const QUICK_ADD_API_URL = 'https://api.todoist.com/sync/v8/quick/add';
 
 export default class Todoist {
@@ -40,24 +40,36 @@ export default class Todoist {
             .then(todoistData => {
                 // Labels
                 let labels = todoistData['labels'];
+
                 labels.sort((l1, l2) => l1.item_order - l2.item_order);
-                labels.forEach(label => {
-                    label.name = label.name.replaceAll('_', ' ').trim();
-                    label.id = `${label.id}`; // convert to string for react-beautiful-dnd
-                });
 
                 labels = labels.filter(label => label.is_deleted === 0);
 
+                // Shared Labels
+                let sharedLabels = todoistData['items'].reduce((ls, item) => {
+                    return ls.concat(item.labels.filter(l => !ls.includes(l)))
+                }, [])
+                    .filter(labelName => !labels.map(l => l.name).includes(labelName));
+
+                sharedLabels = sharedLabels.sort();
+                sharedLabels = sharedLabels.map(labelName => ({
+                        id: labelName,
+                        value: labelName,
+                        name: labelName.replaceAll('_', ' ').trim(),
+                        is_shared: true,
+                    }));
+
+                // note: shared labels always come last (and hence can't be re-ordered)
+                labels = labels.map(label => ({
+                    id: `${label.id}`,
+                    value: label.name,
+                    name: label.name.replaceAll('_', ' ').trim(),
+                    is_shared: false,
+                }));
+
                 // Items - convert ids to strings for react-beautiful-dnd
                 const items = todoistData['items']
-                    .map(i => ({
-                        ...i,
-                        id: `${i.id}`,
-                        labels: i.labels
-                            .map(labelId => `${labelId}`)
-                            // remove deleted labels
-                            .filter(labelId => labels.some(l => l.id === labelId))
-                    }));
+                    .map(i => ({ ...i, id: `${i.id}` }));
 
                 // Projects
                 const projects = todoistData['projects'];
@@ -66,7 +78,7 @@ export default class Todoist {
                 // Colaborators
                 const collaborators = todoistData['collaborators'];
 
-                return { labels, items, projects, collaborators };
+                return { labels, sharedLabels, items, projects, collaborators };
             });
     }
 
@@ -95,6 +107,14 @@ export default class Todoist {
         return Todoist.sendCommand(
             apiToken,
             Todoist.createCommand('label_update_orders', { id_order_mapping: labelOrdering })
+        );
+    }
+
+    static updateSharedLabelName(apiToken, currentLabelName, newLabelName) {
+        // for reasons unknown, this does not work on non-shared labels...
+        return Todoist.sendCommand(
+            apiToken,
+            Todoist.createCommand('label_rename', { name_old: currentLabelName, name_new: newLabelName })
         );
     }
 

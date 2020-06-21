@@ -111,7 +111,7 @@ class List extends React.Component {
         return (
             <div style={style} className={className + ' List list-panel-item'} {...draggableProps}>
                 <ListTitle
-                    title={list.title}
+                    list={list}
                     onRename={this.handleRename}
                     onDelete={this.handleDelete}
                     onCompleteAll={this.handleCompleteAll}
