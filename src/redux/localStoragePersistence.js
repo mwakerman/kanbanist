@@ -4,7 +4,7 @@ import List from '../core/List';
 import Item from '../core/Item';
 import Project from '../core/Project';
 import { priorities as Priorities } from '../core/Priority';
-import { NAMED_FILTERS } from '../redux/modules/lists';
+import { LIST_TODOIST_TYPES, NAMED_FILTERS } from '../redux/modules/lists';
 export { save } from 'redux-localstorage-simple';
 
 // Constants
@@ -27,7 +27,7 @@ function getParameterByName(name) {
 // Deserializes the initial state from localStorage.
 export function load() {
     const loadedState = {};
-    if (localStorage[LOCAL_STORAGE_NAMESPACE]) {
+    if (localStorage[LOCAL_STORAGE_NAMESPACE] ) {
         const jsState = JSON.parse(localStorage[LOCAL_STORAGE_NAMESPACE]);
 
         // Versioning - by bumping the version number I can force a clean load when someone visits the site.
@@ -43,8 +43,13 @@ export function load() {
         // User
         loadedState.user = jsState.user;
 
+        return loadedState; // TODO: remove post dev
+
         // Lists
         loadedState.lists = {};
+
+        loadedState.lists.listType = jsState.lists.listType || LIST_TODOIST_TYPES.LABELS;
+
         loadedState.lists.lists = Immutable.List(
             jsState.lists.lists.map(listObject => {
                 const listItems = listObject.items.map(itemObj => new Item(itemObj));

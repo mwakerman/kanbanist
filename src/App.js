@@ -34,7 +34,7 @@ class App extends React.Component {
         ReactGA.pageview(pathname);
     };
 
-    componentWillMount() {
+    componentDidMount() {
         const { history } = this.props;
         this.unsubscribeFromHistory = history.listen(this.handleLocationChange);
         this.handleLocationChange(history.location);
