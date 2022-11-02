@@ -29,7 +29,7 @@ export default class List extends ListRecord {
     }
 
     updateItem(item, newItem) {
-        const index = this.items.findIndex(el => el.id === item.id);
+        const index = this.items.findIndex(el => `${el.id}` === `${item.id}`);
         if (index < 0) {
             return this;
         }

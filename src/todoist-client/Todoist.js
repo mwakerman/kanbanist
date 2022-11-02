@@ -6,7 +6,7 @@ import URLSearchParams from 'url-search-params';
  */
 
 const SYNC_API_URL = 'https://api.todoist.com/sync/v9/sync';
-const QUICK_ADD_API_URL = 'https://api.todoist.com/sync/v8/quick/add';
+const QUICK_ADD_API_URL = 'https://api.todoist.com/sync/v9/quick/add';
 
 export default class Todoist {
     static getUser(apiToken) {

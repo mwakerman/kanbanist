@@ -240,7 +240,16 @@ function addListItem(state, action) {
 }
 
 function updateListItem(state, action) {
-    const { item, fields } = action.payload;
+    const { fields } = action.payload;
+    const itemId = action.payload.item.id;
+    const item = state.lists.reduce((acc, itemList) => {
+        if (acc) return acc;
+        const item = itemList.items.find(i => `${i.id}` === `${itemId}`)
+        if (item) {
+            return item;
+        }
+        return acc;
+    }, null)
     const updatedLists = state.lists.map(itemList => itemList.updateItem(item, item.updateWith(fields)));
     const updatedBacklog = state.backlog.updateItem(item, item.updateWith(fields));
     return { ...state, lists: updatedLists, backlog: updatedBacklog };
