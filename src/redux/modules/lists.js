@@ -85,6 +85,9 @@ export const types = {
     SET_DEFAULT_PROJECT: 'SET_DEFAULT_PROJECT',
     SET_SORT_BY: 'SET_SORT_BY',
 
+    // TODO: add sections redux methods + client + persistence middleware
+    ADD_SECTION: 'ADD_SECTION',
+
     // TODO: changing item dragging API with new action
     MOVE_ITEM: 'MOVE_ITEM',
     UPDATE_LIST_INDEX: 'UPDATE_LIST_INDEX',
@@ -397,16 +400,7 @@ function fetchSuccess(state, action) {
                 title: label.name,
                 items: ImmutableList(
                     items
-                        .filter(item => item.labels.indexOf(label.id) >= 0)
-                        .filter(item => {
-                            // FIXME: remove items without a valid project (seen in wild, unsure how it happens)
-                            const project = projectIdMap[item.project_id];
-                            if (!project) {
-                                console.warn('item is missing valid project, skipping...');
-                                console.warn(JSON.stringify({ projects, item }, null, 2));
-                            }
-                            return !!project;
-                        })
+                        .filter(item => item.labels.includes(label.name.replaceAll(' ', '_')))
                         .filter(item => !item.checked)
                         .map(item => new Item({
                             ...item,
@@ -423,6 +417,7 @@ function fetchSuccess(state, action) {
 
     // Create list filters
     const filteredListIds = Set(state.filteredLists.map(el => el.id));
+    const filteredListNames = Set(state.filteredLists.map(el => el.name.replaceAll(' ', '_')));
     const filteredLists = loadedLists.filter(el => filteredListIds.has(el.id));
 
     // Create backlog.
@@ -434,16 +429,7 @@ function fetchSuccess(state, action) {
         title: 'Backlog',
         items: ImmutableList(
             items
-                .filter(item => item.labels.length === 0 || Set.of(...item.labels).intersect(filteredListIds).size > 0)
-                .filter(item => {
-                    // FIXME: remove items without a valid project (seen in wild, unsure how it happens)
-                    const project = projectIdMap[item.project_id];
-                    if (!project) {
-                        console.warn('item in backlog is missing valid project, skipping...');
-                        console.warn(JSON.stringify({ projects, item }, null, 2));
-                    }
-                    return !!project;
-                })
+                .filter(item => item.labels.length === 0 || Set.of(...item.labels).intersect(filteredListNames).size > 0)
                 .filter(item => !item.checked)
                 .map(item => new Item({
                     ...item,

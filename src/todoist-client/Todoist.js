@@ -5,7 +5,7 @@ import URLSearchParams from 'url-search-params';
  * A (partial) todoist client for javascript.
  */
 
-const SYNC_API_URL = 'https://api.todoist.com/sync/v8/sync';
+const SYNC_API_URL = 'https://api.todoist.com/sync/v9/sync';
 const QUICK_ADD_API_URL = 'https://api.todoist.com/sync/v8/quick/add';
 
 export default class Todoist {
@@ -34,7 +34,7 @@ export default class Todoist {
 
     static fetch(apiToken) {
         return fetch(
-            `${SYNC_API_URL}?token=${apiToken}&sync_token=*&resource_types=["labels","items","projects","collaborators"]`
+            `${SYNC_API_URL}?token=${apiToken}&sync_token=*&resource_types=["labels","items","projects","sections","collaborators"]`
         )
             .then(res => res.json())
             .then(todoistData => {
@@ -46,7 +46,7 @@ export default class Todoist {
                     label.id = `${label.id}`; // convert to string for react-beautiful-dnd
                 });
 
-                labels = labels.filter(label => label.is_deleted === 0);
+                labels = labels.filter(label => !label.is_deleted);
 
                 // Items - convert ids to strings for react-beautiful-dnd
                 const items = todoistData['items']
@@ -54,13 +54,24 @@ export default class Todoist {
                         ...i,
                         id: `${i.id}`,
                         labels: i.labels
-                            .map(labelId => `${labelId}`)
-                            // remove deleted labels
-                            .filter(labelId => labels.some(l => l.id === labelId))
                     }));
 
                 // Projects
-                const projects = todoistData['projects'];
+                const projectIdToSections = todoistData['sections']
+                    .reduce((acc, section) => {
+                        if (section.is_deleted || section.is_archived) {
+                            return acc;
+                        }
+                        const projectId = section.legacy_project_id || section.project_id;
+                        if (!acc.hasOwnProperty(projectId)) {
+                            acc[projectId] = [];
+                        }
+                        acc[projectId] = acc[projectId].concat([section]);
+                        return acc;
+                    }, {});
+
+                const projects = todoistData['projects']
+                    .map(p => ({...p, sections: projectIdToSections[p.id] || [] }))
                 projects.sort((p1, p2) => p1.item_order - p2.item_order);
 
                 // Colaborators
