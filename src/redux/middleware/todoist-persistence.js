@@ -22,8 +22,12 @@ const todoistPersistenceMiddleware = store => next => action => {
                     hasProjectSyntax || !defaultProject ? '' : `#${defaultProject.name.replaceAll(' ', '')}`;
 
                 Todoist.quickAddItem(token, `${content} ${labelString} ${projectString}`, temp_id)
-                    .then(({ id: itemId }) => store.dispatch(actions.updateId(Item, temp_id, `${itemId}`)))
-                    .then(() => store.dispatch(actions.fetchLists()))
+                    .then(({ id: itemId, ...rest }) => {
+                        const project = projects.find(p => `${p.id}` === `${rest.project_id}`);
+                        const text = rest.content;
+                        store.dispatch(actions.updateId(Item, temp_id, `${itemId}`));
+                        store.dispatch(actions.updateListItem({ id: itemId }, {...rest, project, text }));
+                    })
                     .catch(err => console.error('could not add item', err));
             }
             persistAddListItem();

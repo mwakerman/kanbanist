@@ -10,7 +10,7 @@ import LoginDialog from '../components/LoginDialog';
 
 import { actions as listActions, isListBacklog } from '../redux/modules/lists';
 
-const FETCH_INTERVAL = 60000; // 60s
+const FETCH_INTERVAL = 180000; // 180s = 3min
 
 const DRAGGABLE_TYPES = {
     ITEM: 'item',

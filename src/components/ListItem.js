@@ -196,7 +196,7 @@ class ListItem extends React.Component {
                                 <div className="non-edit-text">
                                     <div className="left-align">
                                         <span className="ListItem-project-name">{item.project.name}</span>
-                                        <a href={`https://todoist.com/showTask?id=${item.id}`} className="task-link-wrapper">
+                                        <a href={`https://todoist.com/app/task/${item.id}`} className="task-link-wrapper">
                                             <Icon className="ListItem-task-icon" icon="link" iconSize={10} />
                                         </a>
                                         <Popover
