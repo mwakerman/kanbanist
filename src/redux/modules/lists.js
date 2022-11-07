@@ -426,7 +426,7 @@ function fetchSuccess(state, action) {
 
     // Create list filters
     const filteredListIds = Set(state.filteredLists.map(el => el.id));
-    const filteredListNames = Set(state.filteredLists.map(el => el.name.replaceAll(' ', '_')));
+    const filteredListNames = Set(state.filteredLists.map(el => el.title.replaceAll(' ', '_')));
     const filteredLists = loadedLists.filter(el => filteredListIds.has(el.id));
 
     // Create backlog.

@@ -1,7 +1,7 @@
 import React from 'react';
-import { Button, Card, Classes, InputGroup, Intent, Popover } from '@blueprintjs/core';
-import { actions as listActions } from '../redux/modules/lists';
+import { Button, Classes, InputGroup, Intent } from '@blueprintjs/core';
 import { connect } from 'react-redux';
+import { actions as listActions } from '../redux/modules/lists';
 
 class NewListInput extends React.Component {
     constructor(props) {
@@ -13,10 +13,10 @@ class NewListInput extends React.Component {
     }
 
     handleAdd = () => {
-        const { addList, user } = this.props;
-        const { is_premium: isPremium } = user;
+        const { addList } = this.props;
 
-        if (this.state.text.length === 0 || !isPremium) {
+        const error = this.state.text.length === 0;
+        if (error) {
             return;
         }
 
@@ -49,43 +49,29 @@ class NewListInput extends React.Component {
     };
 
     render() {
-        const { user } = this.props;
-        const { isFocused } = this.state;
-        const { is_premium: isPremium } = user;
 
         const addButton = (
             <Button
                 className={Classes.MINIMAL}
                 icon="add"
                 intent={Intent.SUCCESS}
-                disabled={this.state.text.length === 0 || !isPremium}
+                disabled={this.state.text.length === 0}
                 onClick={this.handleAdd}
             />
         );
 
         return (
             <div className="NewListInput list-panel-item" id="new-list-input">
-                <Popover
-                    usePortal={true}
-                    isOpen={isFocused && !isPremium}
-                    content={
-                        <Card>
-                            Creating lists requires <a target="_blank" rel="noopener noreferrer" href="https://todoist.com/premium?ref=kanbanist">Todoist Premium</a>.
-                        </Card>
-                    }
-                    target={
-                        <InputGroup
-                            value={this.state.text}
-                            type="text"
-                            placeholder="Add a list..."
-                            onKeyPress={this.handleIfEnter}
-                            onChange={event => this.setState({ text: isPremium ? event.target.value : '' })}
-                            rightElement={addButton}
-                            className="NewListInput-input"
-                            onFocus={() => this.setState({ isFocused: true })}
-                            onBlur={() => setTimeout(() => this.setState({ isFocused: false }), 100)}
-                        />
-                    }
+                <InputGroup
+                    value={this.state.text}
+                    type="text"
+                    placeholder="Add a list..."
+                    onKeyPress={this.handleIfEnter}
+                    onChange={event => this.setState({ text: event.target.value })}
+                    rightElement={addButton}
+                    className="NewListInput-input"
+                    onFocus={() => this.setState({ isFocused: true })}
+                    onBlur={() => setTimeout(() => this.setState({ isFocused: false }), 100)}
                 />
             </div>
         );
