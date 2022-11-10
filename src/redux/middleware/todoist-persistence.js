@@ -1,3 +1,4 @@
+import _ from 'lodash';
 import Todoist from '../../todoist-client/Todoist';
 import { types, actions, isListBacklog, isBacklogListId } from '../modules/lists';
 import List from '../../core/List';
@@ -134,6 +135,7 @@ const todoistPersistenceMiddleware = store => next => action => {
                 break;
             }
 
+            const listIdToList = _.keyBy(state.lists.lists.toArray(), 'id');
             const fromList = state.lists.lists.push(state.lists.backlog).find(l => l.id === fromListId);
             const toList = state.lists.lists.push(state.lists.backlog).find(l => l.id === toListId);
             const item = fromList.get('items').find(i => i.id === itemId);
@@ -142,7 +144,7 @@ const todoistPersistenceMiddleware = store => next => action => {
             const labels = state.lists.lists
                 .filter(l => l.items.map(i => i.id).includes(itemId))
                 .map(l => l.id)
-                .concat(isListBacklog(toList) ? [] : [toListId])
+                .concat(isListBacklog(toList) ? [] : [listIdToList[toListId].title])
                 .filter(listId => !isBacklogListId(listId) && listId !== fromListId)
                 .toSet().toArray();
 
