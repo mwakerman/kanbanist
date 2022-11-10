@@ -63,7 +63,7 @@ class LoginDialog extends React.Component {
                     <p className="small-text">
                         Your <strong>API token</strong> can be found in Todoist Settings under the{' '}
                         <a
-                            href="https://todoist.com/Users/viewPrefs?page=integrations"
+                            href="https://todoist.com/app/settings/integrations#api-token-heading"
                             target="_blank"
                             rel="noopener noreferrer"
                             className="link">
