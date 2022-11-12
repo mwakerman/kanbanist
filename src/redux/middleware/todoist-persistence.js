@@ -8,8 +8,9 @@ const todoistPersistenceMiddleware = store => next => action => {
     const state = store.getState();
     const token = state.user.user.token;
     const project_id = state.lists.defaultProjectId;
-    const projects = state.lists.projects;
+    const { projects, lists }  = state.lists;
     const defaultProject = projects.find(p => p.id === project_id);
+    const listIdToList = _.keyBy(lists.toArray(), 'id');
 
     switch (action.type) {
         case types.ADD_LIST_ITEM:
@@ -17,17 +18,29 @@ const todoistPersistenceMiddleware = store => next => action => {
                 const { list, item } = action.payload;
                 const { content, temp_id } = item;
 
-                const labelString = isListBacklog(list) ? '' : `@${list.title.replaceAll(' ', '_').toLowerCase()}`;
+                const labelString = isListBacklog(list) ? '' : `@${list.title.replaceAll(' ', '_')}`;
                 const hasProjectSyntax = content.indexOf('#') >= 0;
                 const projectString =
                     hasProjectSyntax || !defaultProject ? '' : `#${defaultProject.name.replaceAll(' ', '')}`;
 
+                debugger;
                 Todoist.quickAddItem(token, `${content} ${labelString} ${projectString}`, temp_id)
                     .then(({ id: itemId, ...rest }) => {
                         const project = projects.find(p => `${p.id}` === `${rest.project_id}`);
                         const text = rest.content;
                         store.dispatch(actions.updateId(Item, temp_id, `${itemId}`));
                         store.dispatch(actions.updateListItem({ id: itemId }, {...rest, project, text }));
+                        // quick add can add extra labels
+                        // TODO: we should only convert ` ` to `_` when viewing a label everywhere!
+                        rest.labels
+                            .map(label => label.replaceAll('_', ' '))
+                            .filter(label => label  !== list.title)
+                            .forEach(label => {
+                                const otherList = lists.find(list => list.title === label);
+                                if (otherList) {
+                                    store.dispatch(actions.moveItem(itemId, null, otherList.id));
+                                }
+                            })
                     })
                     .catch(err => console.error('could not add item', err));
             }
@@ -129,23 +142,26 @@ const todoistPersistenceMiddleware = store => next => action => {
             break;
 
         case types.MOVE_ITEM: {
-            const { itemId, fromListId, toListId } = action.payload;
+            const { itemId, fromListId, toListId, local } = action.payload;
+
+            if (local) {
+                break;
+            }
 
             if (fromListId === toListId) {
                 break;
             }
 
-            const listIdToList = _.keyBy(state.lists.lists.toArray(), 'id');
-            const fromList = state.lists.lists.push(state.lists.backlog).find(l => l.id === fromListId);
             const toList = state.lists.lists.push(state.lists.backlog).find(l => l.id === toListId);
-            const item = fromList.get('items').find(i => i.id === itemId);
+            const listsWithItem = state.lists.lists.filter(l => l.items.map(i => i.id).includes(itemId))
+            const item = listsWithItem.get(0).items.find(i => i.id === itemId);
 
             // get all labels for item
-            const labels = state.lists.lists
-                .filter(l => l.items.map(i => i.id).includes(itemId))
+            const labels = listsWithItem
                 .map(l => l.id)
-                .concat(isListBacklog(toList) ? [] : [listIdToList[toListId].title])
+                .concat(isListBacklog(toList) ? [] : [toListId])
                 .filter(listId => !isBacklogListId(listId) && listId !== fromListId)
+                .map(listId => listIdToList[listId].title.replaceAll(' ', '_'))
                 .toSet().toArray();
 
             const updatedItem = { id: item.id, labels };
