@@ -492,7 +492,8 @@ function moveItem(state, action) {
     const { itemId, fromListId, toListId, itemIndex } = action.payload;
 
     const item = state.lists.push(state.backlog)
-        .find(l => l.id === fromListId).get('items')
+        .find(l => l.items.map(i => i.id).includes(itemId))
+        .get('items')
         .find(i => i.id === itemId);
 
     const updatedLists = state.lists.map(l => {
@@ -504,7 +505,11 @@ function moveItem(state, action) {
 
         // don't add an item to a list twice
         if (l.id === toListId && !newList.get('items').some(i => i.id === item.id)) {
-            newList = newList.insert(itemIndex, item);
+            if (itemIndex !== undefined) {
+                newList = newList.insert(itemIndex, item);
+            } else {
+                newList = newList.append(item);
+            }
         }
 
         return newList;
