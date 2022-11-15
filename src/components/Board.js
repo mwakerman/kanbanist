@@ -153,7 +153,7 @@ class Board extends Component {
 
             // assigned
             if (item.project.shared && showIfResponsible) {
-                return item.responsible_uid === user.id;
+                return `${item.responsible_uid}` === `${user.id}`;
             }
 
             // due date - filter items without a due date
