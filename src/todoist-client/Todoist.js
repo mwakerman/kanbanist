@@ -8,13 +8,17 @@ import URLSearchParams from 'url-search-params';
 const SYNC_API_URL = 'https://api.todoist.com/sync/v9/sync';
 const QUICK_ADD_API_URL = 'https://api.todoist.com/sync/v9/quick/add';
 
+
 export default class Todoist {
     static getUser(apiToken) {
         if (apiToken.length < 40) {
             console.warn(`API Token: '${apiToken}' looks too short...`);
         }
 
-        return fetch(`${SYNC_API_URL}?token=${apiToken}&resource_types=["user"]`)
+        return fetch(`${SYNC_API_URL}?resource_types=["user"]`,
+            {
+                headers: { 'Authorization': `Bearer ${apiToken}`}
+            })
             .then(res => {
                 if (res.status === 200) {
                     return res.json();
@@ -34,8 +38,10 @@ export default class Todoist {
 
     static fetch(apiToken) {
         return fetch(
-            `${SYNC_API_URL}?token=${apiToken}&sync_token=*&resource_types=["labels","items","projects","sections","collaborators"]`
-        )
+            `${SYNC_API_URL}?sync_token=*&resource_types=["labels","items","projects","sections","collaborators"]`
+            , {
+                headers: { 'Authorization': `Bearer ${apiToken}`}
+            })
             .then(res => res.json())
             .then(todoistData => {
                 // Labels
@@ -90,12 +96,9 @@ export default class Todoist {
     }
 
     static quickAddItem(apiToken, itemText) {
-        const params = new URLSearchParams({
-            token: apiToken,
-            text: itemText,
-        });
+        const params = new URLSearchParams({ text: itemText });
         const url = `${QUICK_ADD_API_URL}?${params.toString()}`;
-        return fetch(url).then(res => res.json());
+        return fetch(url, {headers: {'Authorization': `Bearer ${apiToken}`}}).then(res => res.json());
     }
 
     static addLabel(apiToken, newLabel, temp_id) {
@@ -151,8 +154,10 @@ export default class Todoist {
                 reject({ error: 'NO_COMMANDS_PROVIDED' });
             });
         }
-        const url = `${SYNC_API_URL}?token=${apiToken}&commands=${JSON.stringify(commands)}`;
-        return fetch(url)
+        const url = `${SYNC_API_URL}?commands=${JSON.stringify(commands)}`;
+        return fetch(url, {
+                headers: { 'Authorization': `Bearer ${apiToken}`}
+            })
             .then(resp => resp.json())
             .catch(err => console.error('Error sending commands: ', err));
     }
