@@ -24,7 +24,7 @@
     "lodash": "^4.17.15",
     "markdown": "^0.5.0",
     "minimist": "^1.2.3",
-    "moment": "^2.18.1",
+    "moment": "^2.29.4",
     "prop-types": "^15.5.10",
     "querystringify": "^2.1.1",
     "raven-js": "^3.21.0",
